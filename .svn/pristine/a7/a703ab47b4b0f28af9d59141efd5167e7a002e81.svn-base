@@ -1,0 +1,66 @@
+<template>
+  <div class="detail-content">
+    <div class="title">腾讯重金买下域名，才发现商标被长沙一科技公司抢注</div>
+    <div class="timeFrom">
+       <div class="from">新华网</div>
+       <div class="time">2017-08-10</div>
+       <div class="clear"></div>
+    </div>
+    <div class="img">
+      <img src="../assets/logo.png"/>
+    </div>
+    <div class="text">
+      就发出的顺口溜公司的刚好放假啊肯定是个就发出的顺口溜公司的刚好放假啊肯定是个就发出的顺口溜公司的刚好放假啊肯定是个就发出的顺口溜公司的刚好放假啊肯定是个就发出的顺口溜公司的刚好放假啊肯定是个
+    </div>
+  </div>
+</template>
+
+<script>
+  import {Tabbar, TabbarItem, Group, Cell} from 'vux'
+  export default {
+    components: {
+      Tabbar,
+      TabbarItem,
+      Group,
+      Cell
+    },
+    mounted: function () {
+      console.log()
+    }
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+  .detail-content{
+    margin: .5rem .5rem;
+    .title{
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .timeFrom {
+      border-bottom: 1px solid #ccc;
+      padding: .5rem;
+      .from,
+      .time {
+        color: #ababab;
+        font-size: .9rem;
+        float: left;
+        margin-right: .5rem;
+      }
+      .time{
+        margin-top:.1rem
+      }
+      .clear{ clear:both}
+    }
+    .img{
+      margin: 1rem;
+      text-align: center;
+    }
+    .text{
+      font-size: 1rem;
+      line-height: 1.5;
+      text-indent:2em
+    }
+  }
+</style>

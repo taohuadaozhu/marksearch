@@ -1,0 +1,133 @@
+<template>
+    <div>
+        <topComponent :title="title" :showLeft='true'></topComponent>
+        <div class="content">
+          <div class="newslist">
+            <scroller noDataText="" style="height:80%;" :on-infinite="infinite">
+              <div style="height:44px;"></div>
+              <newsItem :data="dataList" style="padding:0 0.5rem"></newsItem>
+            </scroller>
+            <!-- <newsItem :data="dataList"></newsItem> -->
+          </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import api from '../../fetch/api'
+export default {
+    components: {
+      api
+    },
+    data () {
+      return {
+        dataList: [],
+        title:'',
+        postdata: {
+          page: 0, //开始（分页信息）
+          size: 7, //数据条数（分页信息）
+          newsType:this.$route.query.newsType
+        },
+        newdata :['']
+      }
+    },
+    watch: {
+      postdata: {
+        handler: function(val, oldVal) {
+          this.getdatalist()
+        },
+        deep: true
+      }
+    },
+    methods: {
+      infinite(done) {
+        // console.log(this.dataList.length, 'this is dataList')
+        if (this.newdata.length === 0) {
+          setTimeout(() => {
+            done(true)
+          }, 1500)
+          return;
+        }
+        setTimeout(() => {
+          this.page++;
+          this.postdata.page= this.page ;
+          console.log(this.postdata.page)
+          this.getdatalist()
+          this.size = this.size + this.postdata.page*7;
+          done()
+        }, 1500)
+      },
+      getdatalist(){
+        api.getNewList(this.postdata).then((res) => {
+          this.newdata = res.dataList;
+          res.dataList.map(item => {
+            this.dataList.push(item)
+          })
+        }).catch((res) =>{
+          this.newdata =[]
+        })
+      },
+    },
+    mounted () {
+      this.page = 0
+      this.size = 7
+      document.body.scrollTop = 0
+      this.getdatalist()
+      console.log(typeof this.$route.query.newsType)
+      switch(this.$route.query.newsType){
+        case 0:
+        this.title ='政策服务';
+        break;
+        case 1:
+        this.title ='法律法规';
+        break;
+        case 2:
+        this.title ='新闻资讯';
+        break;
+        case 3:
+        this.title ='行业资讯';
+        break;
+        case 4:
+        this.title ='最新资讯';
+        break;
+      }
+    }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+.content{
+	background-color: white;
+	height: 100%;
+	p{
+		font-size:.95rem;
+		margin-left: .5rem;
+		line-height: 2rem;
+	}
+}
+.toreg {
+    font-size: 0.8rem;
+    color: #3E82F7;
+    margin-top: .5rem;
+}
+
+h1,
+h2 {
+    font-weight: normal;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+a {
+    color: #42b983;
+}
+</style>

@@ -1,0 +1,89 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+import Home from '@/pages/other/Home'
+import frame from '@/components/Frame'
+
+Vue.use(Router)
+
+export default new Router({
+  routes: [{
+      path: '/',
+      component: frame,
+      children: [{
+          path: '/',
+          redirect: '/login'
+        },
+        {
+          path: '/home',
+          name: 'Home',
+          component: Home
+        },
+        {
+          path: '/login',
+          component: resolve => require(['../pages/other/login'], resolve)
+        },
+        {
+          path: '/register',
+          component: resolve => require(['../pages/other/register'], resolve)
+        },
+        {
+          path: '/bigpic',
+          component: resolve => require(['../pages/search/bigPicture'], resolve)
+        },
+        {
+          path: 'firstpage',
+          component: Home,
+          children: [{
+              path: '/',
+              component: resolve => require(['../pages/search/index'], resolve)
+            },
+            {
+              path: '/search/:stype',
+              component: resolve => require(['../pages/search/marksearch'], resolve)
+            },
+            {
+              path: '/searchresult/:searchkey',
+              component: resolve => require(['../pages/search/searchresults'], resolve)
+            },
+            {
+              path: '/markdetail',
+              component: resolve => require(['../pages/search/markDetail'], resolve)
+            },
+            {
+              path: '/goodsItem/:searchkey',
+              component: resolve => require(['../pages/search/goodsItem'], resolve)
+            },
+            {
+              path: '/newsList/:type',
+              component: resolve => require(['../pages/search/newsList'], resolve)
+            },
+            {
+              path: '/newsDetail:id',
+              component: resolve => require(['../pages/search/newsDetail'], resolve)
+            },
+          ]
+        },
+        {
+          path: 'analysis',
+          component: Home,
+          children: [{
+            path: '/',
+            component: resolve => require(['../pages/analysis/index'], resolve)
+          }, ]
+        },
+        {
+          path: 'user',
+          component: Home,
+          children: [{
+            path: '/',
+            component: resolve => require(['../pages/user/index'], resolve)
+          }, {
+            path: '/collect',
+            component: resolve => require(['../pages/user/collectList'], resolve)
+          }, ]
+        },
+      ]
+    },
+
+  ]
+})

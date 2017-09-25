@@ -1,0 +1,84 @@
+<template>
+  <div class="detail-content">
+    <div>
+    <div class="title">{{newContent.title}}</div>
+    <div class="timeFrom">
+       <div class="from">新华网</div>
+       <div class="time">2017-08-10</div>
+       <div class="clear"></div>
+    </div>
+    <div class="img">
+      <img :src="newContent.image"/>
+    </div>
+    <div class="text">
+      {{newContent.content}}
+    </div>
+  </div>
+  </div>
+</template>
+
+<script>
+  import api from '../fetch/api'
+  import {Tabbar, TabbarItem, Group, Cell} from 'vux'
+  export default {
+    components: {
+      Tabbar,
+      TabbarItem,
+      Group,
+      Cell,
+      api
+    },
+    data () {
+      return {
+        newContent: ''
+      }
+    },
+    methods: {
+      getdatalistcontent () {
+        api.getNewListcontent(this.$route.params.id).then((res) => {
+          console.log(res.data)
+          this.newContent = res.data
+        })
+      }
+    },
+    mounted: function () {
+      console.log()
+      this.getdatalistcontent()
+    }
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+  .detail-content{
+    margin: .5rem .5rem;
+    .title{
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .timeFrom {
+      border-bottom: 1px solid #ccc;
+      padding: .5rem;
+      .from,
+      .time {
+        color: #ababab;
+        font-size: .9rem;
+        float: left;
+        margin-right: .5rem;
+      }
+      .time{
+        margin-top:.1rem
+      }
+      .clear{ clear:both}
+    }
+    .img{
+      margin: 1rem;
+      text-align: center;
+    }
+    .text{
+      font-size: 1rem;
+      line-height: 1.5;
+      text-indent:2em
+    }
+  }
+</style>

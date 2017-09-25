@@ -1,0 +1,141 @@
+<template>
+  <div class="container">
+    <searchTop :searchtype="stype" :placeholder="placeholder"></searchTop>
+    <div class="search-middle">
+      <div>
+        <span>最近搜索</span>
+        <i class="iconfont icon-icon42" @click="deleteResent(data)"></i>
+      </div>
+      <div><p><span v-for="i in SearchList" v-if="" @click="gotoGoodsItem(i)">{{i}}</span></p></div>
+      <div>
+        <span>热门商标</span>
+      </div>
+      <div>
+        <p>
+          <span v-for="i in result" @click="gotoTrademarkDetails(i)">{{i.dataName}}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { Panel, Icon, Flexbox, FlexboxItem, CellBox } from 'vux'
+export default {
+  components: {
+    Panel,
+    Icon,
+    Flexbox,
+    FlexboxItem,
+    CellBox
+  },
+  data() {
+    return {
+      result: [],
+      SearchList: [],
+      stype: '',
+      placeholder: '',
+      data: {
+        phoneId: '',
+        keywordType: ''
+      }
+    }
+  },
+  created () {
+    this.stype = this.$route.query.stype
+    console.log(this.$route)
+    if (this.stype === 'goods') {
+      this.placeholder = '请输入商品名称'
+      this.data.keywordType = '1'  // 关键字类型       0:商标 ，1:商品
+    } else {
+      this.placeholder = '请输入您想查询的商标名称'
+      this.data.keywordType = '0'
+    }
+    api.getPopularBrand().then((res) => {
+      this.result = res.results
+    })
+  },
+  methods: {
+    loginOut () {
+      this.$router.push('login') // 暂时不做处理只去登录页面
+    },
+    gotoTrademarkDetails (item) {
+      //regNum  intCls
+      this.$router.push({path:'markdetail',query:{regNum:item.regNum,intCls:item.intCls}})
+    },
+    getData () {
+      let phoneId = window.localStorage.mark_mobile;
+      // let postdata={
+      //   keyword:'',
+      // }
+      api.getNearSearchList(phoneId).then((res) => {
+        if (this.stype === 'goods') {
+          this.SearchList = res.results.goods
+        } else {
+          this.SearchList = res.results.brand
+        }
+      })
+    },
+    deleteResent (data) {
+      api.deleteCaption(data).then((res) => {
+        alert('删除成功')
+        this.getData()
+      })
+    },
+    gotoGoodsItem (i) {
+      if (this.stype === 'goods') {
+        this.$router.push({path: 'goodsItem',query:{searchkey:i} })
+        } else {
+         this.$router.push({path:'searchresult/',query:{searchkey:i,stype:'mark'}})
+        }
+    }
+  },
+  mounted: function () {
+    this.data.phoneId = localStorage.mark_mobile
+    document.body.scrollTop = 0
+    if(localStorage.mark_mobile&&localStorage.mark_mobile!='undefined'&&localStorage.mark_mobile!=''){
+      this.getData()
+    }else{
+      if (this.stype === 'goods') {
+          this.SearchList = window.localStorage.nearGoods.split(',');
+        } else {
+          this.SearchList =window.localStorage.nearBrand;
+        }
+    }
+
+  }
+}
+</script>
+<style lang="less" scoped>
+.search-middle {
+  background-color: white;
+  padding-top: 3rem;
+  color: #333;
+  div:nth-child(odd) {
+    margin: 1rem;
+    height: 2rem;
+    span {
+      font-weight: bold;
+    }
+    i {
+      float: right;
+    }
+  }
+  div:nth-child(even) {
+    margin: 1rem;
+    p {
+      font-size: 1rem;
+      span {
+        margin: 0 .5px;
+        display: inline-block;
+        color: #333;
+        background-color: #fbfbfb;
+        padding: .4rem;
+        font-size: 1rem;
+        border-radius: 3px;
+        line-height: 2rem;
+      }
+    }
+  }
+}
+</style>

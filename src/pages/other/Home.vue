@@ -1,0 +1,85 @@
+<template>
+    <div>
+      <transition name="fade" mode="out-in">
+        <router-view></router-view>
+      </transition>
+        <footComponent :idx='2' v-show="isIndex"></footComponent>
+    </div>
+</template>
+
+<script>
+import { XInput, Group, XButton, Cell, TabItem, Tab ,Search } from 'vux'
+export default {
+    components: {
+        XInput,
+        XButton,
+        Group,
+        Cell,
+        Tab,
+        TabItem,
+
+    },
+
+    data() {
+        return {
+            isIndex: true,
+            name: 'hello',
+            loginType: true,
+            msg: 'Welcome to Your Vue.js App',
+            value: 'shihuimei',
+            searchkey: '',
+            results: [],
+        }
+    },
+    methods: {
+        tabclick(type) {
+            this.loginType = Boolean(type);
+        },
+        toreg() {
+            this.$router.push('register');
+        },
+        setFocus() {
+            this.$refs.search.setFocus()
+        },
+        resultClick(item) {
+            window.alert('you click the result item: ' + JSON.stringify(item))
+        },
+        getResult(val) {
+            this.results = val ? getResult(this.value) : []
+        },
+        onSubmit() {
+            this.$refs.search.setBlur()
+            this.$vux.toast.show({
+                type: 'text',
+                position: 'top',
+                text: 'on submit'
+            })
+        },
+        onFocus() {
+            console.log('on focus')
+        },
+        onCancel() {
+            console.log('on cancel')
+        },
+        goCancel() {
+            //根据情景不一样，跳转的页面也会不同，暂定跳到我的贷款首页
+            //...省略
+            this.$router.push('register');
+        },
+    },
+    updated () {
+      this.isIndex = this.$router.app.isIndex
+    }
+}
+</script>
+<<style lang="less" scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .15s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0
+}
+@import '../../assets/common.css';
+</style>

@@ -1,0 +1,54 @@
+<template>
+  <div class="container">
+    <topComponent title='我的' :showLeft='true'>
+        </topComponent>
+        <div style="margin-top:30%;">
+    <group>
+      <cell class="aaaa" title="我的收藏" value="" is-link link='/collect'></cell>
+      </group>
+      <group>
+      <cell title="退出" value="" @click.native="loginOut"></cell>
+    </group>
+    </div>
+  </div>
+</template>
+<script>
+  
+  import {Group, Cell, CellBox} from 'vux'
+  export default {
+    components: {
+     Group, Cell, CellBox
+    },
+    data () {
+      return {
+        fage: false
+      }
+    },
+    methods: {
+      dj: function () {
+        console.log(this.fage)
+        this.fage = !this.fage
+      },
+      loginOut () {
+        window.localStorage.removeItem('mark_id');
+        this.$router.push('/login')	//暂时不做处理只去登录页面
+      },
+      gotoSearch () {
+        this.$router.push('/search')
+      },
+      lisLogFn (data) {
+        if (data) {
+          this.login = 'true'
+        }
+      }
+    },
+    mounted: function () {
+      console.log(this.fage)
+      console.log(this.$route.params.keyword)
+      document.body.scrollTop = 0
+    }
+  }
+</script>
+<style lang="less" scoped>
+
+</style>

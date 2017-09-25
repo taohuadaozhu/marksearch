@@ -1,0 +1,267 @@
+<template>
+  <div class="container">
+    <topComponent :title='title' :showLeft='true'></topComponent>
+    <div class="content">
+      <tab>
+        <tab-item selected @on-item-click="onItemClick">商标查询</tab-item>
+        <tab-item @on-item-click="onItemClick">商标注册</tab-item>
+        <tab-item @on-item-click="onItemClick">商标转让</tab-item>
+        <tab-item @on-item-click="onItemClick">常见问题</tab-item>
+      </tab>
+    </div>
+    <div class="main">
+      <!-- 商标查询 -->
+      <div class="query" v-if="query">
+        <div v-for="item in dataList" @click="gotoDetails(item.id)">
+          <!-- <img :src="" alt=""> -->
+          <img src="" alt="">
+          <p class="center">{{item.title}}</p>
+          <p class="right">{{item.name}}</p>
+          <p class="right">{{item.date}}</p>
+        </div>
+      </div>
+      <!-- 商标注册 -->
+      <div class="register" v-if="register">
+        <div v-for="item in dataList" @click="gotoDetails(item.id)">
+          <!-- <img :src="" alt=""> -->
+          <img src="" alt="">
+          <p class="center">{{item.title}}</p>
+          <p class="right">{{item.name}}</p>
+          <p class="right">{{item.date}}</p>
+        </div>
+      </div>
+      <!-- 商标转让 -->
+      <div class="sellOut" v-if="sellOut">
+        <div v-for="item in dataList" @click="gotoDetails(item.id)">
+          <!-- <img :src="" alt=""> -->
+          <img src="" alt="">
+          <p class="center">{{item.title}}</p>
+          <p class="right">{{item.name}}</p>
+          <p class="right">{{item.date}}</p>
+        </div>
+      </div>
+      <!-- 常见问题 -->
+      <div class="problem" v-if="problem">
+        <div>
+          <p>
+            <strong>商标注册申请常见问题指南</strong>
+          </p>
+          <p class="title2">2017-06-15/国家工商行政管理总局商标局</p>
+        </div>
+        <!--  -->
+        <group>
+          <cell class="cell" :title="('一、有关商标注册申请的办理途径、申请书件、规费等')" is-link :border-intent="false" :arrow-direction="showContent001 ? 'up' : 'down'" @click.native="showContent001 = !showContent001"></cell>
+
+          <p class="slide" :class="showContent001?'animate':''">
+            <ul class="newList">
+              <li>1.办理商标申请的途径介绍</li>
+              <li>2.自行办理与委托商标代理机构办理有什么区别吗？哪种方式更快些？</li>
+              <li>3.国内自然人自行办理商标注册申请要求及必备书件</li>
+              <li>4.国内法人或者其他组织自行办理商标注册申请必备书件</li>
+              <li>5.国内法人或者其他组织申请商标注册的身份证明文件都有哪些？</li>
+              <li>6.我们是一家公司在北京的代表处，可以申请商标注册吗？</li>
+            </ul>
+          </p>
+          <!-- <cell class="cell" :title="('二、有关商标注册申请书的填写')" is-link :border-intent="false" :arrow-direction="showContent002 ? 'up' : 'down'" @click.native="showContent002 = !showContent002"></cell>
+
+          <p class="slide" :class="showContent002?'animate':''">
+            <ul class="newList">
+              <li>1.办理商标申请的途径介绍</li>
+              <li>2.自行办理与委托商标代理机构办理有什么区别吗？哪种方式更快些？</li>
+              <li>3.国内自然人自行办理商标注册申请要求及必备书件</li>
+              <li>4.国内法人或者其他组织自行办理商标注册申请必备书件</li>
+              <li>5.国内法人或者其他组织申请商标注册的身份证明文件都有哪些？</li>
+              <li>6.我们是一家公司在北京的代表处，可以申请商标注册吗？</li>
+            </ul>
+          </p> -->
+        </group>
+        <!--  -->
+      </div>
+    </div>
+
+  </div>
+</template>
+<script>
+import { Tab, TabItem, Sticky, Divider, XButton, Swiper, SwiperItem } from 'vux'
+//
+import { Cell, CellBox, CellFormPreview, Group, Badge } from 'vux'
+//
+export default {
+  //
+  mounted() {
+    setTimeout(() => {
+      this.money = -1024
+    }, 2000)
+  },
+  //
+  components: {
+    Tab,
+    TabItem,
+    Sticky,
+    Divider,
+    XButton,
+    Swiper,
+    SwiperItem,
+    //
+    Group,
+    Cell,
+    CellFormPreview,
+    CellBox,
+    Badge
+    //
+  },
+
+  data() {
+    return {
+      title: '商标百科',
+      query: true,
+      register: false,
+      sellOut: false,
+      problem: false,
+      dataList: [
+        { title: '何为近似商标？近似商标的审查标准', id: 1, name: '百度', date: '2017-06-15' },
+        { title: '何为近似商标？近似商标的审查标准', id: 2, name: '搜狐', date: '2017-06-15' }
+      ],
+      //
+      showContent001: false,
+      showContent002: false,
+      showContent003: false,
+      showContent004: false,
+      showContent005: false,
+      //
+    }
+  },
+  methods: {
+    //
+    onClick() {
+      console.log('on click')
+    },
+    gotoDetails(id){
+        this.$router.push({path:'',query:{id:id}})
+    },
+    //
+    onItemClick(index) {
+      if (index == 0) {
+        this.query = true, this.register = false, this.sellOut = false, this.problem = false
+      }
+      if (index == 1) {
+        this.query = false,
+          this.register = true,
+          this.sellOut = false,
+          this.problem = false
+      }
+      if (index == 2) {
+        this.query = false
+        this.register = false
+        this.sellOut = true
+        this.problem = false
+      }
+      if (index == 3) {
+        this.query = false
+        this.register = false
+        this.sellOut = false
+        this.problem = true
+      }
+
+      console.log('on item click:', index)
+    },
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '~vux/src/styles/1px.less';
+@import '~vux/src/styles/center.less';
+
+.box {
+  // padding: 15px;
+}
+
+.active-6-1 {
+  color: rgb(252, 55, 140) !important;
+  border-color: rgb(252, 55, 140) !important;
+}
+
+.active-6-2 {
+  color: #04be02 !important;
+  border-color: #04be02 !important;
+}
+
+.active-6-3 {
+  color: rgb(55, 174, 252) !important;
+  border-color: rgb(55, 174, 252) !important;
+}
+
+.main {
+  font-size: 0.9rem;
+}
+
+.main>div>div {
+  margin: 0.5rem 0.6rem 0.5rem 0.6rem;
+  position: relative;
+}
+
+.main>div>div>img {
+  position: absolute;
+
+  width: 5rem;
+  height: 4rem;
+  border: 1px solid gray;
+}
+
+.center {
+  margin-left: 5.3rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.right {
+  text-align: right;
+  font-size: 0.9rem;
+  color:#C1C1C1
+}
+
+//
+.slide {
+  padding: 0 20px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height .5s cubic-bezier(0, 1, 0, 1) -.1s;
+}
+
+.animate {
+  max-height: 9999px;
+  transition-timing-function: cubic-bezier(0.5, 0, 1, 0);
+  transition-delay: 0s;
+}
+
+.cell {
+  background: #19B5FE;
+  margin-bottom: 0.5rem
+}
+
+.vux-title {
+  color: white!important;
+}
+
+//
+.problem>div:nth-child(1) {
+  border-bottom: 0.01rem solid gray;
+  padding: 0.2rem 0;
+}
+
+.problem>div:nth-child(1)>p:nth-child(2) {
+  margin: 0.2rem 0rem;
+  color: #cccccc
+}
+
+.newList>li {
+  font-size: 0.8rem;
+}
+.content{
+  margin-top: 2.73rem;
+  padding: 0rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 0.05rem solid gray;
+
+}
+</style>

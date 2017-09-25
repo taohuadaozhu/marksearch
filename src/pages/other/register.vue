@@ -1,0 +1,144 @@
+<template>
+    <div>
+        <topComponent title='注册' :showLeft='true'>
+        </topComponent>
+        <div class="content">
+            <div style="margin-top: 2rem;">
+                <group title="">
+                    <x-input title="手机" v-model="tel" name="mobile" placeholder="手机号码" keyboard="number" is-type="china-mobile"></x-input>
+                    <x-input title="验证码" class="weui-vcode" placeholder="短信验证码" v-model="capchar">
+                        <x-button slot="right" type="primary" mini @click.native="getCapchar">{{countdown===0?'获取验证码':countdown+'s'}}</x-button>
+                    </x-input>
+                    <x-input title="密码" type="password" name="mobile" @blur.native="passcheck" placeholder="密码" v-model="pass"></x-input>
+                    <x-input title="确认密码" type="password" name="mobile" placeholder="确认密码" v-model="checkpass"></x-input>
+                </group>
+                <group title="">
+                    <x-button @click.native="register" type="primary">注册</x-button>
+                </group>
+                <div class="toreg" @click="tologin">马上登录</div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import api from '../../fetch/api'
+import { XInput, Group, XButton, Cell, TabItem, Tab } from 'vux'
+export default {
+    components: {
+        XInput,
+        XButton,
+        Group,
+        Cell,
+        Tab,
+        TabItem,
+
+    },
+    data() {
+        return {
+            tel: '',
+            capchar: '',
+            pass: '',
+            checkpass: '',
+            countdown: 0,
+        }
+    },
+    methods: {
+        getCapchar() {
+            if (this.countdown === 0) {
+                if (!/^[0-9]{11}$/.test(this.tel)) {
+                    this.$vux.toast.text('手机号码错误！')
+                    return false
+                }
+                this.countdown = 60;
+                this.timedCount()
+                api.getCapchar(this.tel)
+                    .then(res => {
+                        this.$vux.toast.text('发送成功,五分钟内有效！');
+                    })
+            }
+        },
+        timedCount() {
+            let _this = this;
+            let s = setInterval(function() {
+                _this.countdown--;
+                if (_this.countdown === 0) {
+                    clearTimeout(s)
+                }
+            }, 1000);
+        },
+        passcheck() {
+            if (this.pass === '') {
+                this.$vux.toast.text('请输入密码');
+            } else if (this.pass.length <= 5 || this.pass.length > 16) {
+                this.$vux.toast.text('请输入密码6-15位');
+            }
+        },
+        register() {
+            if (/^[0-9]{11}$/.test(this.tel)) {
+                if (/^[0-9]{4}$/.test(this.capchar)) {
+                    if (this.pass.length > 5 && this.pass.length <= 16) {
+                        if (this.pass === this.checkpass) {
+                            let data = {
+                                mobile: this.tel,
+                                password: this.pass,
+                                captcha: this.capchar
+                            }
+                            api.mobileRegist(data)
+                                .then(res => {
+                                    this.$vux.toast.text('注册成功！');
+                                    this.$router.push('login');
+                                })
+                                .catch(error => {
+                                })
+                        } else {
+                            this.$vux.toast.text('两次输入密码不一样！');
+
+                        }
+                    } else {
+                        this.$vux.toast.text('请输入密码6-15位');
+                    }
+                } else {
+                    this.$vux.toast.text('请输入正确格式的验证码！')
+                }
+
+            } else {
+                this.$vux.toast.text('手机号码错误！')
+            }
+
+        },
+        tologin() {
+            this.$router.push('login');
+        },
+
+    },
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.toreg {
+    font-size: 0.8rem;
+    color: #3E82F7;
+    margin-top: .5rem;
+}
+
+h1,
+h2 {
+    font-weight: normal;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+a {
+    color: #42b983;
+}
+</style>

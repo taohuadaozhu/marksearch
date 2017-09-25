@@ -1,0 +1,98 @@
+<template>
+  <div>
+    <topComponent :title='title' :showLeft='true'></topComponent>
+    <!-- <x-header :left-options="{backText: ''}" style="background-color:#19B5FE;font-size:0.9rem">商标百科</x-header> -->
+    <div class="title">
+        <div class="content-title">
+          <div>{{query.title}}</div>
+          <div>{{query.createtime}}/{{query.platform}}</div>
+        </div>
+        <div v-html="query.content" style="padding:1rem 0.5rem"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+import api from '../../fetch/api'
+import { XHeader, Actionsheet, TransferDom, ButtonTab, ButtonTabItem } from 'vux'
+export default {
+  // directives: {
+  //   TransferDom
+  // },
+  components: {
+    XHeader,
+    Actionsheet,
+    ButtonTab,
+    ButtonTabItem
+  },
+  data () {
+    return {
+      showMenus: false,
+      query:'',
+      question:'',
+      questions:'',
+      title:'商标百科'
+    }
+  },
+  methods: {
+      getdatalistcontent () {
+        api.getQueryDetails(this.$route.query.id).then((res) => {
+          this.query = res.data
+          console.log(this.query.profession_type)
+        })
+      }
+
+  },
+  mounted(){
+    this.getdatalistcontent()
+    // console.log(this.$route.query.profession_type)
+  },
+  created(){
+      switch(this.query.profession_type){
+        case 0:
+        this.title ='商标查询';
+        break;
+        case 1:
+        this.title ='商标注册';
+        break;
+        case 2:
+        this.title ='商标转让';
+        break;
+      }
+  }
+
+
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+
+.overwrite-title-demo {
+  margin-top: 5px;
+}
+.title{
+  padding: 4.3rem 0.5rem 2.8rem 0.5rem;
+  font-size:0.8rem;
+}
+.content-title{
+  border-bottom: 1px solid gray;
+  padding:0rem 0.5rem;
+  padding-bottom: 0.5rem;
+  // margin-top:2.1rem;
+}
+.content-title>div:nth-child(1){
+  font-size: 1rem;
+}
+.content-title>div:nth-child(2){
+  margin-top:0.5rem;
+  color: gray;
+  font-size: 0.8rem;
+}
+.vux-header .vux-header-left .left-arrow:before{
+  border: 2px solid #fff!important
+}
+.vux-header-title{
+  font-size: 0.9rem!important;
+}
+</style>

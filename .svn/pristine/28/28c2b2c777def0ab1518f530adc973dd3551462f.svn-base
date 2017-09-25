@@ -1,0 +1,151 @@
+<template>
+    <div class="items" @click="toMarkDetail">
+        <div class="itemtop">
+            
+            <div class="text">
+                <div class="name">奥运会
+                    <span class="type">商标已注册</span>
+                </div>
+                <div class="itemcontent">
+                    <div>注册号：
+                        <span>G112700</span>
+                    </div>
+                    <div>申请日期：
+                        <span>2017-08-10</span>
+                    </div>
+                    <div>国际分类：
+                        <span>11</span>
+                    </div>
+                    <div>商品类别：
+                        <span>陶瓷</span>
+                    </div>
+                    <div>
+                        申请人：
+                        <span>广东省佛山市建材行业协会</span>
+                    </div>
+                </div>
+            </div>
+            <img src="../assets/image/news.png" @click.stop="toBig">
+        </div>
+
+    </div>
+</template>
+<script>
+import { XInput } from 'vux'
+export default {
+    components: {
+        XInput
+    },
+    data() {
+        return {
+            showBig:true,
+            backTit: '返回',
+            iSshow: true,
+            value: 'shihuimei',
+            searchkey: 'markname',
+            results: [],
+
+            list: [
+                { key: 'markname', value: '商标' },
+                { key: 'marknum', value: '商品' },
+                { key: 'qiye', value: '企业' },
+                { key: 'daili', value: '代理' },
+            ]
+        }
+    },
+    methods: {
+        toBig(){
+            console.log('ddd')
+this.$router.push('/bigpic');
+        },
+        goBack() {
+            this.$router.back();
+        },
+        toMarkDetail(){
+            this.$router.push('/markdetail');
+        }
+
+    },
+    props: ['itemdata'],
+    mounted: function() {
+        if (this.$options.propsData.back !== undefined) this.backTit = this.$options.propsData.back;			//如果传递了back,则左侧返回文字显示的是传入的值
+        if (this.$options.propsData.showLeft !== undefined) this.iSshow = this.$options.propsData.showLeft;	//如果传递了showLeft(默认是true),则该值决定左侧是否显示
+    }
+}
+function getResult(val) {
+    let rs = []
+    for (let i = 0; i < 20; i++) {
+        rs.push({
+            title: `${val} result: ${i + 1} `,
+            other: i
+        })
+    }
+    return rs
+}
+</script>
+<style lang="less" scoped>
+.bigPic{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    vertical-align: middle;
+    img{
+        width: 100%;
+    }
+}
+.items {
+    width: 100%;
+    height: 9rem;
+    margin: .5rem 0;
+    padding: .5rem;
+    box-sizing: border-box;
+    border-bottom: 1px solid #dcdcdc;
+    .itemtop{
+        width: 100%;
+        height: 6.5rem;
+        font-size: .85rem;
+        color: #999;
+        padding-right: 5px;
+        img {
+            width: 4rem;
+            height: 4rem;
+            position: absolute;
+            left: 1rem;
+            margin-right: -100%;
+            border-radius: 4px;
+        }
+        .text {
+            float: left;
+            width: 95%;
+
+            .name {
+                margin-left: 5rem;
+                font-size: 1rem;
+                height: 1rem;
+                color: #333;
+                margin-bottom: 1rem;
+                .type {
+                    border: 1px #f99f3b solid;
+                    border-radius: 2px;
+                    font-size: .7rem;
+                    color: #f99f3b;
+                }
+            }
+            .itemcontent {
+                margin-left: 5rem;
+                div {
+                    span {
+                        color: #333;
+                        font-size: .9rem;
+                    }
+                }
+            }
+        }
+    }
+}
+</style>

@@ -1,0 +1,86 @@
+<template>
+  <div class="container">
+    <!-- <searchTop :searchtype="stype"></searchTop> -->
+    <searchTop ></searchTop>
+    <div class="typecontent">
+        <div class="typeItem" v-for="(item,index) in dataList" :key="item.id" @click="gotoDetails(item.id)">
+          <!--  -->
+            <div></div>
+            <div class="sort">第{{index+1}}类</div>
+            <div class="name">{{item.title}}</div>
+        </div>
+    </div>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import {Panel, Icon, Flexbox, FlexboxItem, CellBox} from 'vux'
+export default {
+    components: {
+      Panel,
+      Icon,
+      Flexbox,
+      FlexboxItem,
+      CellBox
+    },
+    data () {
+      return {
+        dataList:[]
+      }
+    },
+    created () {
+       api.getFirstAllTitle().then((res) => {
+          this.dataList = res.dataList
+        })
+    },
+    // props: ['dataList'],
+    methods: {
+      gotoDetails(id){
+        this.$router.push({path:'typeDetails',query:{id:id}})
+      },
+      getData () {
+
+        // api.getNearSearchList(1576).then((res) => {
+        //   this.SearchList = res.results
+        // })
+      },
+      deleteResent () {
+        api.deleteCaption().then((res) => {
+          console.log(res)
+        })
+      },
+
+    },
+    mounted: function () {
+      document.body.scrollTop = 0
+      this.getData()
+    }
+  }
+</script>
+<style lang="less" scoped>
+ .typecontent{
+     display: flex;
+     flex-direction: row;
+     flex-wrap: wrap;
+     justify-content: space-around;
+     margin-top: 3rem;
+    padding: .5rem .5rem 5rem .5rem;
+    // background: #f6f6f6;
+    text-align: center;
+     .typeItem{
+         width: 30%;
+    height: 5rem;
+    background: floralwhite;
+    margin: 5px;
+    padding-bottom: .5rem;
+    box-shadow: 3px 3px 3px #888888;
+    border-radius: 5px;
+         div:first-child{
+             height: 2.5rem;
+         }
+         .sort{
+             font-size: .8rem;
+         }
+     }
+ }
+</style>

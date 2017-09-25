@@ -1,0 +1,28 @@
+<template>
+  <div class="cover">
+    <ul>
+      <li>XXXXXXXXXX</li>
+      <li>XXXXXXXXXX</li>
+      <li>XXXXXXXXXX</li>
+      <li>XXXXXXXXXX</li>
+    </ul>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+    }
+  },
+  methods: {
+
+  },
+  mounted() {
+
+  }
+}
+</script>
+
+<style lang="less" scoped>
+
+</style>

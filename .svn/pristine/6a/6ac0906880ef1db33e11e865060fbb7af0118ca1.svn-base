@@ -1,0 +1,226 @@
+<template>
+  <div>
+    <topComponent title='选择商品服务项' :showLeft='true'>
+    </topComponent>
+    <div class="content">
+      <p>为您匹配到以下类似群和商品项：</p>
+      <serviceItem v-for="item in datas" :itemFirst="item"></serviceItem>
+    </div>
+    <!-- <div class="fixedbutton">
+      <div>重置</div>
+      <div class="goon" @click="gotoResult">继续查询</div>
+    </div> -->
+  </div>
+</template>
+
+<script>
+import api from '../../fetch/api'
+import { mapGetters } from 'vuex'
+export default {
+
+  data() {
+    return {
+      loginType: true,
+      msg: 'Welcome to Your Vue.js App',
+      value: 'shihuimei',
+      searchkey: '',
+      results: [],
+      datas:  [
+        {
+            "id": "402894815e2ced9f015e2d053fb6000c",
+            "sortNum": 42,
+            "firstClassTitle": "科技科学类",
+            "secondClass": [
+                {
+                    "sortNum": 12,
+                    "similarCode": "4227",
+                    "secondClassTitle": "4227-单一服务",
+                    "fid": "402894815e2ced9f015e2d053fb6000c",
+                    "thirdClassType": [
+                        {
+                            "goodsCode": "420186",
+                            "intCls": "42",
+                            "goodsName": "桌子、椅子、桌布和玻璃器皿出租"
+                        }
+                    ]
+                }
+            ]
+        },
+        ,
+        {
+            "id": "402894815e285a09015e286b9095000a",
+            "sortNum": 24,
+            "firstClassTitle": "床上用品类",
+            "secondClass": [
+                {
+                    "sortNum": 2,
+                    "similarCode": "2402",
+                    "secondClassTitle": "2402 特殊用织物",
+                    "fid": "402894815e285a09015e286b9095000a",
+                    "thirdClassType": [
+                        {
+                            "goodsCode": "240048",
+                            "intCls": "24",
+                            "goodsName": "玻璃布"
+                        },
+                        {
+                            "goodsCode": "240104",
+                            "intCls": "24",
+                            "goodsName": "纺织用玻璃纤维织物"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+      goodsItems1: []
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'getItems'
+    ]),
+  },
+  watch: {
+    'getItems': {
+      handler: function(val, oldval) {
+        // console.log(777)
+        // this.goodsItems1 = this.$store.state.goodsItems;
+      },
+      deep: true
+    }
+  },
+
+  mounted() {
+
+    this.searchkey = this.$route.query.searchkey;
+    let postdata = {
+      goodsName: this.searchkey
+    }
+    //根据传来的商品名获取尼斯分类
+    api.advancedSearchReturnType(postdata).then((res) => {
+      //给返回的数组最后一项加一个标示符，在子项中用做是否选中的状态
+      let dataList = res.dataList.map(item => {
+        item.children.map(item1 => {
+          item1.children.map(item11 => {
+            item11.select = false;
+          })
+        }
+        )
+      })
+      //存在vuex内，之后再搜索结果页会用
+      this.$store.commit('changeGoodsItems', dataList);
+      //假数据
+      this.datas.map(item => {
+        item.children.map(item1 => {
+          item1.children.map(item11 => {
+            item11.select = false;
+          })
+        }
+        )
+      })
+      this.$store.commit('changeGoodsItems', this.datas);
+      //假数据
+
+      this.goodsItems1 = this.$store.state.goodsItems;
+
+    })
+
+  },
+  methods: {
+
+    login() {
+      this.$router.push('/')
+    },
+    tabclick(type) {
+      this.loginType = Boolean(type)
+    },
+    toreg() {
+      this.$router.push('register')
+    },
+    setFocus() {
+      this.$refs.search.setFocus()
+    },
+    resultClick(item) {
+      window.alert('you click the result item: ' + JSON.stringify(item))
+    },
+    getResult(val) {
+      this.results = val ? getResult(this.value) : []
+    },
+    onSubmit() {
+      this.$refs.search.setBlur()
+      this.$vux.toast.show({
+        type: 'text',
+        position: 'top',
+        text: 'on submit'
+      })
+    },
+    onFocus() {
+      console.log('on focus')
+    },
+    onCancel() {
+      console.log('on cancel')
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+.fixedbutton {
+  position: fixed;
+  background-color: #ff9900;
+  height: 3rem;
+  bottom: 0;
+  width: 100%;
+  z-index: 999;
+  color: white;
+  line-height: 3rem;
+  div {
+    float: left;
+    width: 50%;
+    text-align: center;
+    height: 100%;
+  }
+  .goon {
+    background-color: #336600;
+    color: white;
+  }
+}
+
+.content {
+  background-color: white;
+  height: 100%;
+  padding-bottom: 5rem;
+  p {
+    font-size: .95rem;
+    margin-left: .5rem;
+    line-height: 2rem;
+  }
+}
+
+.toreg {
+  font-size: 0.8rem;
+  color: #3E82F7;
+  margin-top: .5rem;
+}
+
+h1,
+h2 {
+  font-weight: normal;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+a {
+  color: #42b983;
+}
+</style>

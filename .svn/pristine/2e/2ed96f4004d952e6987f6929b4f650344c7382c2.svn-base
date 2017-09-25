@@ -1,0 +1,238 @@
+<template>
+  <div class="container">
+    <topComponent title='商标详情' :showLeft='true'>
+    </topComponent>
+    <div class="content">
+      <div class="markimg">
+        <img :src="goodList.imageUrl" @click.stop="toBig(goodList.imageUrl)">
+        <div>{{goodList.tmName}}</div>
+        <div :class="{active:isCollected}" class="collect"  @click="collect">
+        <i  class="iconfont icon-shoucang"></i>
+        <p>收藏</p>
+        </div>
+      </div>
+      <group >
+        <cell title="注册号">{{goodList.regNum}}</cell>
+        <cell title="申请日期" >{{goodList.appDate}}</cell>
+        <cell title="国际分类" is-link @click.native="gototypeDetails(goodList.intCls)">{{goodList.intCls}}</cell>
+        <!-- <cell title="商品类别" :value="value">{{goodList.goodTypeName}}</cell>
+        <cell title="类似群" :value="value">{{goodList.similarCode}}</cell> -->
+      </group>
+      <group>
+        <div class="longcell">
+          <p>商品服务项</p>
+          <p v-for="(item,index) in serviceItems">【{{item.similarCode}}】<span v-for="name in item.goodNames">&nbsp; {{name}}</span></p>
+        </div>
+      </group>
+      <group>
+        <cell title="申请人中文名" :value="value">{{goodList.holderInfo.regCnName}}</cell>
+        <cell title="申请人英文名" :value="value">{{goodList.holderInfo.regEnName}}</cell>
+        <div class="longcell">
+          <p>申请人中文地址</p>
+          <p>{{goodList.holderInfo.regCnAddr}}</p>
+        </div>
+        <div class="longcell">
+          <p>申请人英文地址</p>
+          <p>{{goodList.holderInfo.regEnAddr}}</p>
+        </div>
+        <!-- <cell title="代理人名称" :value="value">{{goodList.agentInfo}}</cell> -->
+        <div class="longcell">
+          <p>代理人名称</p>
+          <p>
+            <span v-for="(item,index) in goodList.agentInfo" :key="index">{{index}}:{{item}}.</span>
+            </p>
+        </div>
+      </group>
+      <group>
+        <cell title="初审公告期号" :value="value">{{goodList.firstAnncIssue}}</cell>
+        <cell title="初审公告日期" :value="value">{{goodList.firstAnncDate}}</cell>
+        <cell title="注册公告期号" :value="value">{{goodList.regAnncIssue}}</cell>
+        <cell title="注册公告日期" :value="value">{{goodList.regAnncDate}}</cell>
+      </group>
+      <!-- <group>
+        <cell title="是否共有商标" :value="value">{{goodList.ifShareTm}}</cell>
+        <cell title="共有人中文名" :value="value">{{goodList.coownerInfo.coownerCnName}}</cell>
+        <cell title="共有人英文名" :value="value">{{goodList.coownerInfo.coownerEnName}}</cell>
+        <div class="longcell">
+          <p>共有人中文地址</p>
+          <p>{{goodList.coownerInfo.coownerCnAddr}}</p>
+        </div>
+        <div class="longcell">
+          <p>共有人英文地址</p>
+          <p>{{goodList.coownerInfo.coownerEnAddr}}</p>
+        </div>
+      </group> -->
+      <group>
+        <cell title="商标类型" :value="value">{{goodList.tmType}}</cell>
+        <cell title="商标形式" :value="value">{{goodList.tmFormType}}</cell>
+        <cell title="专用权期限" :value="value">{{goodList.propertyDate}}</cell>
+        <!-- <cell title="国际注册日期" :value="value"></cell>
+        <cell title="后期指定日期" :value="value"></cell> -->
+        <cell title="优先权日期" :value="value">{{goodList.priorityDate}}</cell>
+        <cell title="是否共有商标" :value="value">{{goodList.ifShareTm}}</cell>
+      </group>
+    </div>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { XInput, Group, XButton, Cell } from 'vux'
+export default {
+  components: {
+    XInput,
+    XButton,
+    Group,
+    Cell
+  },
+  data() {
+    return {
+      value: '',
+      backTit: '返回',
+      iSshow: true,
+      isCollected: false,
+      userId: window.localStorage.mark_id,
+      tmType:'abc',
+      goodList: {
+        holderInfo:''
+      },
+      parms: {
+        "id":"1055099",
+	      "tableName":"T_FENFA_35_TM_REGBASEINFO"
+      },
+      regNum:'',
+      intCls:'',
+      serviceItems:[]
+    }
+  },
+  methods: {
+    gototypeDetails(){
+      // this.$router.push('typeDetails',{id:})
+    },
+
+    getshopList(){
+      let postdata = {
+        regNum:this.regNum,
+        intCls:this.intCls,
+        userId:window.localStorage.mark_id
+      }
+      api.getshopList(postdata).then(res => {
+        this.goodList = res.regBasicInformationDomainInfo;
+        console.log(this.goodList.goodsId)
+        if(this.goodList.goodsId&&this.goodList.goodsId.length>0){
+          let postdata1 = {
+            goodsId:this.goodList.goodsId
+          }
+          api.getMarkDetailService(postdata1).then(res =>{
+            this.serviceItems = res.dataList
+          })
+        }
+      })
+    },
+    collect() {
+
+      if (this.userId) {
+        this.isCollected = !this.isCollected;
+            let data = {
+              userId: this.userId,
+              tradeMarkId:this.goodList.id
+              ,tradeMarkTable:this.goodList.tableName
+              ,imgId: this.goodList.imageId }
+            api.collect(data).then((res) => {
+              this.$vux.toast.text('收藏成功！')
+                // this.dataList = res.dataList;
+            })
+        } else {
+            this.$router.push('/login');
+        }
+
+    },
+   toBig(imageurl) {
+      localStorage.setItem('mark_image',imageurl);
+      this.$router.push('bigpic')
+    },
+    goBack() {
+      this.$router.back()
+    }
+  },
+  props: ['title', 'back', 'showLeft'],
+  mounted: function() {
+    this.regNum= this.$route.query.regNum;
+    this.intCls= this.$route.query.intCls;
+    this.getshopList()
+    if (this.$options.propsData.back !== undefined) this.backTit = this.$options.propsData.back;			/*如果传递了back,则左侧返回文字显示的是传入的值*/
+    if (this.$options.propsData.showLeft !== undefined) this.iSshow = this.$options.propsData.showLeft;	//如果传递了showLeft(默认是true),则该值决定左侧是否显示
+  }
+}
+</script>
+<style lang="less" scoped>
+.active {
+  color: orangered;
+  opacity: 1;
+}
+
+.longcell {
+
+  padding: 0 1rem;
+  p {
+    font-size: .9rem;
+    color: #333;
+    padding-bottom: .5rem;
+  }
+  p:first-child {
+    padding: .5rem 0;
+    font-size: 1rem;
+    color: #999;
+  }
+}
+
+.longcell:before {
+  content: " ";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  border-top: 1px solid #D9D9D9;
+  color: #D9D9D9;
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+  left: 15px;
+}
+
+.content {
+  padding: 0;
+  background: #f6f6f6;
+  padding-bottom: 5rem;
+}
+
+.markimg {
+  background: white;
+  padding: 1rem 0;
+  text-align: center;
+  img {
+    width: 4rem;
+    height: 4rem;
+    left: 1rem;
+    border-radius: 4px;
+  }
+  div {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  .collect {
+    position: absolute;
+    right: 8%;
+    top: 4rem;
+    font-size: .7rem;
+    opacity: .7;
+    i{
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.weui-cells {
+  margin-top: 0;
+}
+</style>

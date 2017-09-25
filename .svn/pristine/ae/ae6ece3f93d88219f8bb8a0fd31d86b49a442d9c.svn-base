@@ -1,0 +1,103 @@
+<template>
+  <div class="cover">
+    <ul>
+      <li :style="listStyle" class="active" @click="showSelect=!showSelect">
+        <span>{{selectedName}}</span>
+        <i :class="{active: showSelect}" :style="widthStyle"></i>
+      </li>
+      <li :style="listStyle" @click="selOption(item)" v-for="(item, index) in options" :key="index" :class="{active: showSelect}">
+        <span>{{item.name}}</span>
+      </li>
+    </ul>
+  </div>
+</template>
+<script>
+export default {
+  props: {
+    options: {
+      type: Array,
+      required: true
+    },
+    listStyle: {
+      type: Object,
+      default: function () {
+        return {
+          backgroundColor: '#fff'
+        }
+      }
+    },
+    widthStyle: {
+      type: Object,
+      default: function () {
+        return {
+          width: '1rem'
+        }
+      }
+    }
+  },
+  data() {
+    return {
+      selectedName: '',
+      showSelect: false
+    }
+  },
+  methods: {
+    selOption(item) {
+      this.selectedName = item.name
+      this.$emit('setSelTop', item)
+      this.showSelect = false
+    }
+  },
+  mounted() {
+    this.selectedName = this.options[0].name
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.cover {
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  >ul {
+    height: 100%;
+    >li {
+      list-style: none;
+      text-align: center;
+      height: 0;
+      visibility: hidden;
+      transition: all 200ms;
+      position: relative;
+      &:first-child {
+        >i {
+          height: 100%;
+          background: url(../assets/image/RightArrow@2x.png) center no-repeat;
+          background-size: contain;
+          transition: all 200ms;
+          position: absolute;
+          right: 7%;
+          top: 0;
+          &.active {
+            transform: rotate(180deg);
+          }
+        }
+      }
+      &.active {
+        visibility: visible;
+        display: block;
+        height: 100%;
+      }
+      &:not(:first-child):after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-top: 1px solid #D9D9D9;
+        transform-origin: 0 0;
+        transform: scaleY(0.5);
+      }
+    }
+  }
+}
+</style>

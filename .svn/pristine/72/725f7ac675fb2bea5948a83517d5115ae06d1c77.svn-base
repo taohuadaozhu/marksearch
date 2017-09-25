@@ -1,0 +1,55 @@
+<template>
+    <div>
+        <topComponent title='资讯阅读' :showLeft='true'></topComponent>
+        <div class="content">
+          <newsDetail></newsDetail>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+  components: {
+  },
+  methods: {}
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+.content{
+	background-color: white;
+	height: 100%;
+  padding-bottom: .5rem;
+  margin-top: 3.8rem;
+	p{
+		font-size:.95rem;
+		margin-left: .5rem;
+		line-height: 2rem;
+	}
+}
+.toreg {
+    font-size: 0.8rem;
+    color: #3E82F7;
+    margin-top: .5rem;
+}
+
+h1,
+h2 {
+    font-weight: normal;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+a {
+    color: #42b983;
+}
+</style>

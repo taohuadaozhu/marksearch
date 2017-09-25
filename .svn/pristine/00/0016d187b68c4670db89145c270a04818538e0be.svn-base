@@ -1,0 +1,86 @@
+<template>
+ <div>
+  <!-- <topComponent :title='title' :showLeft='true'></topComponent> -->
+  <topComponent :title='item.continentName' :showLeft='true' v-for="item in continent"></topComponent>
+  <!-- 国际商标入口 -->
+  <div class="door">
+    <div class="xdoor">
+      <ul>
+        <li v-for="item in continent"><div class="images"><img :src="item.image" alt=""></div><span>{{item.countryName}}</span></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { Tab, TabItem, Sticky, Divider, XButton, Swiper, SwiperItem } from 'vux'
+
+export default {
+  components: {
+    Tab,
+    TabItem,
+    Sticky,
+    Divider,
+    XButton,
+    Swiper,
+    SwiperItem
+  },
+  data () {
+    return {
+      title:'',
+      query: true,
+      register: false,
+      query:'',
+      dataList:'',
+      continent:[],
+    }
+  },
+  methods:{
+    getList(){
+        api.getInternationalInfo(this.$route.query.continentId).then((res) => {
+          this.continent = res.dataList;
+        });
+    },
+  },
+  mounted(){
+    this.getList()
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '~vux/src/styles/1px.less';
+@import '~vux/src/styles/center.less';
+.door{
+  width: 100%;
+  margin-top: 3.8rem;
+  border-top: 0.01rem solid black;
+}
+.xdoor{
+  overflow: hidden;
+  width: 21rem;
+  height: 10rem;
+  margin:auto;
+}
+.xdoor ul li{
+  width:5rem;
+  height:3rem;
+  float:left;
+  background:#d0d0d0;
+  margin: 1rem;
+  list-style: none;
+  text-align: center;
+//   line-height: 5rem;
+}
+.images{
+  // background:#d0d0d0;
+}
+.images img{
+  width: 5rem;
+  // height:3rem;
+}
+.xdoor ul li span{
+
+}
+</style>

@@ -1,0 +1,117 @@
+<template>
+  <div class="container">
+    <searchTop :searchtype="stype"></searchTop>
+    <div class="topTitle"><span>商标类别</span><span @click="gotoExplain">查看说明</span></div>
+    <div class="typecontent">
+        <div class="typeItem" v-for="(item,index) in dataList" :key="item.id" @click="gotoDetails(item.id)">
+          <!--  -->
+            <div class="img"><img :src="item.image" alt=""></div>
+            <div class="sort">第{{index+1}}类</div>
+            <div class="name">{{item.title}}</div>
+        </div>
+    </div>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { Panel, Icon, Flexbox, FlexboxItem, CellBox } from 'vux'
+export default {
+  components: {
+    Panel,
+    Icon,
+    Flexbox,
+    FlexboxItem,
+    CellBox
+  },
+  data() {
+    return {
+      dataList: [],
+      stype:'typelist'
+    }
+  },
+  created() {
+    api.getFirstAllTitle().then((res) => {
+      this.dataList = res.dataList
+    })
+  },
+  methods: {
+    getData() {
+      // api.getNearSearchList(1576).then((res) => {
+      //   this.SearchList = res.results
+      // })
+    },
+    deleteResent() {
+      api.deleteCaption().then((res) => {
+        console.log(res)
+      })
+    },
+      gotoDetails(id){
+        this.$router.push({path:'typeDetails',query:{id:id}})
+      },
+      gotoExplain(){
+        this.$router.push({path:'explain'})
+      }
+  },
+  mounted: function() {
+    document.body.scrollTop = 0
+    this.getData()
+  }
+}
+</script>
+<style lang="less" scoped>
+.typecontent {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: .5rem .5rem 5rem .5rem; // background: #f6f6f6;
+  text-align: center;
+  .typeItem {
+    width: 30%;
+    height: 8.84rem;
+    margin: 5px;
+    padding-bottom: .5rem;
+    border-bottom: 0.01rem solid #e5e5e5;
+    div:first-child {
+    }
+    .sort {
+      font-size: .8rem;
+      color: #666;
+      margin-top: 0.54rem;
+    }
+    .name{
+      font-size: 1.07rem;
+      color: #000;
+      margin-top: 0.54rem;
+    }
+  }
+}
+.topTitle{
+  margin-top: 3.8rem;
+  padding: .5rem .73rem .5rem .7rem;
+  height: 2.46rem;
+  line-height: 2.46rem;
+  position: relative;
+  border-bottom: 0.05rem solid #000;
+}
+.topTitle span:nth-child(1){
+  font-size: 1.12rem;
+  position: absolute;
+  left: 50%;
+  margin-left: -2.23rem;
+}
+.topTitle span:nth-child(2){
+  float: right;
+  color: #007bef;
+  font-size: 0.88rem;
+}
+.img>img{
+  display: black;
+  width: 3.08rem;
+  height: 3.08rem;
+}
+.img{
+  height: 3.08rem;
+  margin-top: 1.38rem;
+}
+</style>

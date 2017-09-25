@@ -1,0 +1,283 @@
+<template>
+  <div class="container">
+    <topComponent :title='title' :showLeft='true'></topComponent>
+    <div class="content" style="padding-bottom:0.4rem">
+      <tab>
+        <tab-item selected @on-item-click="onItemClick">商标查询</tab-item>
+        <tab-item @on-item-click="onItemClick">商标注册</tab-item>
+        <tab-item @on-item-click="onItemClick">商标转让</tab-item>
+        <tab-item @on-item-click="onItemClick">常见问题</tab-item>
+      </tab>
+    </div>
+    <div class="main">
+      <!-- 商标查询 -->
+      <div class="query" v-if="query">
+        <div v-for="item in query" @click="gotoDetails(item.id)">
+          <!-- <img :src="" alt=""> -->
+          <img :src="item.image" alt="">
+          <p class="center">{{item.title}}</p>
+          <p class="right">{{item.platform}}</p>
+          <p class="right">{{item.createTime}}</p>
+        </div>
+      </div>
+      <!-- 商标注册 -->
+      <div class="register" v-if="register">
+        <div v-for="item in dataList" @click="gotoDetails(item.id)">
+          <!-- <img :src="" alt=""> -->
+          <img src="" alt="">
+          <p class="center">{{item.title}}</p>
+          <p class="right">{{item.name}}</p>
+          <p class="right">{{item.date}}</p>
+        </div>
+      </div>
+      <!-- 商标转让 -->
+      <div class="sellOut" v-if="sellOut">
+        <div v-for="item in dataList" @click="gotoDetails(item.id)">
+          <!-- <img :src="" alt=""> -->
+          <img src="" alt="">
+          <p class="center">{{item.title}}</p>
+          <p class="right">{{item.name}}</p>
+          <p class="right">{{item.date}}</p>
+        </div>
+      </div>
+      <!-- 常见问题 -->
+      <div class="problem" v-if="problem">
+        <div>
+          <p>
+            <strong>{{questionTitle.title}}</strong>
+          </p>
+          <p class="title2" style="margin-top:0.5rem">{{questionTitle.createTime}}{{questionTitle.platform}}
+          </p>
+        </div>
+        <div v-for="(item,index) in question">
+          <dl>
+            <dt style="background:#007bfe;color:#fff;margin-bottom:0.8rem" @click="clickShow(index)" :key="index">{{item.item}}</dt>
+            <dd v-show="activeIndex===index" style="padding:0 0.8rem">
+              <ul>
+                <li v-for="(items,index) in item.brandQuestions" @click="gotoQuestion(item.id)"style="list-style:none">{{index+1}}、{{items.question}}</li>
+              </ul>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { Tab, TabItem, Sticky, Divider, XButton, Swiper, SwiperItem } from 'vux'
+//
+import { Cell, CellBox, CellFormPreview, Group, Badge } from 'vux'
+//
+export default {
+  //
+  mounted() {
+    setTimeout(() => {
+      this.money = -1024
+    }, 2000)
+  },
+  //
+  components: {
+    Tab,
+    TabItem,
+    Sticky,
+    Divider,
+    XButton,
+    Swiper,
+    SwiperItem,
+    //
+    Group,
+    Cell,
+    CellFormPreview,
+    CellBox,
+    Badge
+    //
+  },
+  data() {
+    return {
+      title: '商标百科',
+      comditon: false,
+      query: true,
+      register: false,
+      sellOut: false,
+      problem: false,
+      dataList: [],
+      question: [],
+      questions: [],
+      query: [],
+      questionTitle: '',
+      news: [],
+      activeIndex: -1,
+
+    }
+  },
+  created() {
+    api.getQuestion().then((res) => {
+      this.question = res.dataList;
+      this.questionTitle = res.title;
+      this.questions = res.dataList.brandQuestions;
+    })
+  },
+  methods: {
+    clickShow(index) {
+
+      this.activeIndex = index
+      console.log(this.activeIndex)
+    },
+    onClick() {
+      console.log('on click')
+    },
+    // 跳转详情
+    gotoDetails(id) {
+      this.$router.push({ path: '/trademarkDetails', query: { id: id } })
+      console.log("跳转详情")
+    },
+    //跳转问题详情页
+    gotoQuestion(id) {
+      this.$router.push({ path: '/encyclopediasDetails', query: { id:id } })
+      console.log("跳转问题详情")
+    },
+    onItemClick(index) {
+      if (index == 0) {
+        this.query = true,
+          this.register = false,
+          this.sellOut = false,
+          this.problem = false,
+        api.getQuery(index).then((res) => {
+          this.query = res.dataList;
+          console.log(this.query)
+        });
+      }
+      if (index == 1) {
+        this.query = false,
+          this.register = true,
+          this.sellOut = false,
+          this.problem = false
+        api.getQuery(index).then((res) => {
+          this.query = res.dataList;
+          console.log(this.query)
+        });
+      }
+      if (index == 2) {
+        this.query = false
+        this.register = false
+        this.sellOut = true
+        this.problem = false
+        api.getQuery(index).then((res) => {
+          this.query = res.dataList;
+          console.log(this.query)
+        });
+      }
+      if (index == 3) {
+        this.clickShow(0);
+        this.query = false
+        this.register = false
+        this.sellOut = false
+        this.problem = true
+        this.trues = true
+        console.log("常见问题")
+      }
+      console.log('on item click:', index)
+    }
+  },
+  mounted() {
+    // this.getdatalist ()
+    api.getQuery(0).then((res) => {
+      this.query = res.dataList;
+      console.log(this.query)
+    });
+  },
+
+}
+</script>
+<style lang="less" scoped>
+@import '~vux/src/styles/1px.less';
+@import '~vux/src/styles/center.less';
+.active-6-1 {
+  color: rgb(252, 55, 140) !important;
+  border-color: rgb(252, 55, 140) !important;
+}
+
+.active-6-2 {
+  color: #04be02 !important;
+  border-color: #04be02 !important;
+}
+
+.active-6-3 {
+  color: rgb(55, 174, 252) !important;
+  border-color: rgb(55, 174, 252) !important;
+}
+
+.main {
+  font-size: 0.9rem;
+  padding-bottom: 3rem;
+}
+
+.main>div>div {
+  margin: 0.5rem 0.6rem 0.5rem 0.6rem;
+  position: relative;
+}
+
+.main>div>div>img {
+  position: absolute;
+  width: 5rem;
+  height: 4rem;
+}
+
+.center {
+  margin-left: 5.3rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.right {
+  text-align: right;
+  font-size: 0.9rem;
+  color: #C1C1C1
+}
+
+//
+.slide {
+  padding: 0 20px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height .5s cubic-bezier(0, 1, 0, 1) -.1s;
+}
+
+.animate {
+  max-height: 9999px;
+  transition-timing-function: cubic-bezier(0.5, 0, 1, 0);
+  transition-delay: 0s;
+}
+
+.cell {
+  background: #19B5FE;
+  margin-bottom: 0.5rem
+}
+
+.vux-title {
+  color: white!important;
+}
+
+//
+.problem>div:nth-child(1) {
+  border-bottom: 0.01rem solid gray;
+  padding: 0.2rem 0;
+}
+
+.problem>div:nth-child(1)>p:nth-child(2) {
+  margin: 0.2rem 0rem;
+  color: #cccccc
+}
+
+.newList>li {
+  font-size: 0.8rem;
+}
+
+.content {
+  margin-top: 2.73rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 0.05rem solid gray;
+  padding: 0 0.5rem;
+}
+</style>

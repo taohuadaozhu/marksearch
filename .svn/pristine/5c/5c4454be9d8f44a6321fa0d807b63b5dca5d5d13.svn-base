@@ -1,0 +1,170 @@
+<template>
+  <div class="container">
+    <x-header :left-options="{backText: ''}" style="background-color: transparent;">商标查询</x-header>
+    <div class="search">
+      <div class="search-item">
+        <div class="search-title">商标搜索</div>
+        <div class="search-contain">
+          <input class="search-context" type="search" placeholder="请输入商标名" v-model="inputVal" v-on:keyup.13="synthesizeSearch">
+          <button @click="synthesizeSearch">搜索</button>
+        </div>
+      </div>
+      <div class="search-item">
+        <div class="search-title">范围查询</div>
+        <div class="search-contain">
+          <div class="search-context">{{parms.isForeignSearch?'国际':'国内'}}</div>
+          <div class="line"></div>
+          <div class="search-context" style="color: #999;">{{parms.isForeignSearch?'国内':'国际'}}</div>
+          <div class="exchange" @click="exchangeRange"></div>
+        </div>
+      </div>
+      <div class="search-item">
+        <div class="search-title">查询内容</div>
+        <div class="search-contain">
+          <select class="search-context" v-model="selType">
+            <option value="0">商标名</option>
+            <option value="1">注册号</option>
+            <option value="2">申请人</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-item">
+        <div class="search-title">历史搜索</div>
+        <div class="search-contain">
+          <div class="search-history">
+            <!-- <span>海利</span>
+            <span>海利海利海利</span> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { XHeader } from 'vux'
+export default {
+  components: {
+    XHeader
+  },
+  data() {
+    return {
+      inputVal: '',
+      selType: '0',
+      parms: {
+        brandName: "",                       //商标名
+        regNum: "",                             //商标注册码
+        register: "",                           //商标申请人
+        intCls: [],                             //国际分类
+        isForeignSearch: false,                 //（国际/国内）查询（false：国内，true：国际）
+        wellKnownTm: "",                        //是否驰名
+        begin: 0,                               //分页信息，begin从0开始
+        limit: 18,
+        more: {
+          brandType: "",               //商标类型
+          brandFormType: "",           //商标形式类型
+          landMarInfo: ""              //地理标志
+        }
+      }
+    }
+  },
+  // watch: {
+  //   selType: function(val, oldVal) {
+  //     if (val === '1') {
+  //     }
+  //   }
+  // },
+  methods: {
+    exchangeRange() {
+      this.parms.isForeignSearch = !this.parms.isForeignSearch
+    },
+    synthesizeSearch() {
+      switch (this.selType) {
+        case '0':
+          this.parms.brandName = this.inputVal;
+          break;
+        case '1':
+          this.parms.regNum = this.inputVal;
+          break;
+        case '2':
+          this.parms.register = this.inputVal;
+          break;
+      }
+      console.log(this.parms);
+      this.$store.commit('changeMultipleSearch', this.parms);
+      this.$router.push('/multipleSearchResult')
+    }
+  },
+  mounted() {
+  }
+}
+</script>
+<style lang="less" scoped>
+.container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-height: 100%;
+  background: url('../../assets/image/multipleBg.png') center center no-repeat;
+  background-size: cover;
+  .search {
+    padding: 0 15px 30px;
+    .search-item {
+      .search-title {
+        color: #fff;
+        font-size: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+      .search-contain {
+        position: relative;
+        background-color: #fff;
+        border-radius: 6px;
+        overflow: hidden;
+        padding-left: 15px;
+        .search-context {
+          width: 100%;
+          height: 3.46rem;
+          line-height: 3.46rem;
+        }
+        >button {
+          position: absolute;
+          right: 4px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #fff;
+          background-color: #FFD200;
+          height: 90%;
+          width: 6rem;
+          border-radius: 6px;
+        }
+        .line {
+          border-top: 1px solid #E4E7F0;
+          margin-right: 4rem;
+        }
+        .exchange {
+          position: absolute;
+          width: 2rem;
+          height: 2rem;
+          right: 15px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: url('../../assets/image/ArrowsIcon@2x.png') center center no-repeat;
+          background-size: 100% 100%;
+        }
+        .search-history {
+          height: 12rem;
+          padding: 15px 0;
+          >span {
+            padding: 0.4rem 1rem;
+            color: #666666;
+            background-color: #f8f8f8;
+            border-radius: 3px;
+            margin-right: 15px;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

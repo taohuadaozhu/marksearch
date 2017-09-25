@@ -1,0 +1,186 @@
+<template>
+  <div>
+    <div class="filter">
+      <dl class="filter-info">
+        <dd @click="openPro">
+          <span>{{region}}</span>
+        </dd>
+        <dd @click="openIndustry">
+          <span>行业</span>
+        </dd>
+        <dd @click="openState">
+          <span>商标状态</span>
+        </dd>
+      </dl>
+    </div>
+    <div class="graypanel" v-show="isOpenPro" @click="isOpenPro=false">
+      <div class="propanel">
+        <ul>
+          <li>不限</li>
+          <li v-for="i in 34" v-bind:class="{ active: i===2 }" @click.stop="selectPro(i)">北京</li>
+        </ul>
+      </div>
+      <div class="regionpanel">
+        <ul>
+          <li>不限</li>
+          <li v-for="i in 15" @click="setRegion(i)">石家庄</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="graypanel" v-show="isOpenIndustry" @click="isOpenIndustry=false">
+      <div class="graycontent">
+        <ul>
+          <li>不限</li>
+          <li v-for="i in 34" v-bind:class="{ active: i===2 }" @click.stop="selectPro(i)">原料化工</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="graypanel" v-show="isOpenState" @click="isOpenState=false">
+      <div class="graycontent">
+        <ul>
+          <li>不限</li>
+          <li  v-bind:class="{ active: true }" @click.stop="selectPro(1)">注册中</li>
+          <li   @click.stop="selectPro(2)">已注册</li>
+          <li  @click.stop="selectPro(3)">已失效</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { Tabbar, TabbarItem, Group, Cell } from 'vux'
+export default {
+  components: {
+    Tabbar,
+    TabbarItem,
+    Group,
+    Cell
+  },
+  data() {
+    return {
+      region: '地区',
+      isOpenPro: false,
+      isOpenState: false,
+      isOpenIndustry: false,
+      data: {},
+    }
+  },
+  methods: {
+    selectPro() {
+
+    },
+    loginOut() {
+      this.$router.push('/login');	//暂时不做处理只去登录页面
+    },
+    gotoSearch() {
+      this.$router.push('/search');
+    },
+    openPro() {
+      this.isOpenPro = true;
+    },
+    openIndustry() {
+      this.isOpenIndustry = true;
+    },
+    openState() {
+      this.isOpenState = true;
+    },
+    setRegion(i) {
+      this.region = '石家庄' + i;
+    }
+
+  },
+  mounted: function() {
+    document.body.scrollTop = 0;
+  }
+}
+</script>
+<style lang="less" scoped>
+.graypanel {
+  position: fixed;
+  width: 100%;
+  z-index: 9999;
+  background-color: rgba(99, 99, 99, .5);
+  top: 0;
+  height: 100%;
+  .propanel,
+  .regionpanel,.graycontent {
+    float: left;
+    width: 40%;
+    height: 80%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: white;
+    li {
+      font-size: .75rem;
+      line-height: 2rem;
+      padding-left: 8px;
+      border-bottom: 1px solid #dcdcdc;
+    }
+  }
+  .regionpanel {
+    float: left;
+    width: 60%;
+    height: 80%;
+    background-color: #dcdcdc;
+    li {
+      font-size: .7rem;
+      line-height: 2.3rem;
+    }
+  }
+  .graycontent {
+    text-align: center;
+    width: 50%;
+    height: auto;
+    max-height: 70%;
+    margin:25% 25%;
+    vertical-align: middle;
+  }
+}
+
+.active {
+  background-color: #dcdcdc;
+}
+
+.filter {
+  position: fixed;
+  top: 2.75rem;
+  width: 100%;
+  height: 2rem;
+      z-index: 9;
+}
+
+.filter-info {
+  background: #fff;
+  overflow: hidden;
+  border-bottom: 1px solid #dfdfdf;
+  dd {
+    float: left;
+    width: 33%;
+    line-height: 2.2rem;
+    font-size: 1rem;
+    text-align: center;
+    border-right: 1px solid #dfdfdf;
+    span::after {
+      content: " ";
+      display: inline-block;
+      line-height: 1.2rem;
+      height: 4px;
+      width: 4px;
+      border-width: 0 2px 2px 0;
+      border-color: #333333;
+      border-style: solid;
+      -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+      transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+      position: relative;
+      top: -3px;
+      left: 15px;
+    }
+  }
+}
+
+dd:last-child {
+  border-right: 0;
+}
+</style>

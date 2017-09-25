@@ -1,0 +1,62 @@
+<template>
+    <div>
+        <topComponent :title="title" :showLeft='true'></topComponent>
+        <div class="content">
+            <ul>
+              <li class="title">商标分类根据《类似商品和服务区分表》，采用层次代码结构展示。</li>
+              <li class="title1">第一层是商品和服务<span style="color:#FF4800">类别</span>，用中文第1类，第2类...表示，共45个类别。</li>
+              <li class="title1">第二层是商品和服务<span style="color:#FF4800">类似群</span>，代码采用四位数字，前两位数字表示商品和服务类别，后面两位数字表示类似群号，如“0304”即表示第三类商品的第4类似群；</li>
+              <li class="title1">第三层是商品和服务项目，代码采用六位数字，前两位表示商品和服务类别，后面四位数字为商品或服务项目编码，六位数字前面加“C”的代码表示未列入《国际分类》的我国常用商品和服务项目</li>
+              <li class="title1">第四层的代码用中文（一）（二）......表示各类似群中的某一部分；<br>一个类似群内的商品和服务项目<span style="color:#FF4800">原则是是类似商品和服务</span>。若该类似群内的商品和服务项目并不全部判为类似，则按类似关系将商品和服务项目分为若干部分，用中文（一）（二）...表示，同一部分的商品和服务项目原则上判为类似，不同部分间的商品和服务项目原则上不判为类似。对于某些特殊情况，该类似群后面用加注的形式详细说明。<br>类似的商品和服务项目之间应交叉检索</li>
+            </ul>
+        </div>
+    </div>
+</template>
+
+<script>
+import api from '../../fetch/api'
+export default {
+    components: {
+      api
+    },
+    data () {
+      return {
+        dataList: [],
+        title:'商标类别说明'
+      }
+    },
+    methods: {
+
+    },
+    mounted () {
+    }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+.content{
+	background-color: white;
+  height: 100%;
+  padding: 1.12rem 1.19rem 1.38rem;
+
+}
+.content ul li{
+  list-style: none;
+  // padding: 0.5rem 0;
+  line-height: 1.5rem;
+}
+.title{
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5rem;
+}
+.title1{
+  // height: 8.19rem;
+  padding:1.5rem 0.81rem 1.15rem 0.81rem;
+  line-height: 1.5rem;
+  border: 0.01rem solid #eee;
+  margin-top: 0.76rem;
+  border-radius: 0.19rem;
+}
+</style>

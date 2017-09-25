@@ -1,0 +1,39 @@
+<template>
+  <div class="content">
+    <div class="title">
+      <p>{{}}</p>
+      <p>{{}}</p>
+    </div>
+    <div class="main"></div>
+  </div>
+</template>
+<script>
+  import api from '../../fetch/api'
+  import {Panel, Icon, Flexbox, FlexboxItem, CellBox} from 'vux'
+  export default {
+    components: {
+      Panel,
+      Icon,
+      Flexbox,
+      FlexboxItem,
+      CellBox
+    },
+    data () {
+      return {
+
+      }
+    },
+    created () {
+    },
+    methods: {
+    },
+    prop: [],
+    mounted: function () {
+      document.body.scrollTop = 0
+    }
+  }
+</script>
+<style lang="less" scoped>
+
+</style>
+

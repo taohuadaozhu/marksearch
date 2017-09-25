@@ -1,0 +1,508 @@
+<template>
+  <div class="container">
+    <topComponent :title='title' :showLeft='true'></topComponent>
+    <div class="chartc" style="margin-top:3.8rem">
+      <div class="tool">
+        <div class="charttitle">商标代理公司代理量排名（Top20）</div>
+        <div>
+          <select v-model="region1">
+            <option v-for="item in regions1" :key="item.id" :value="item.id">{{item.title}}</option>
+          </select>
+
+          <select v-model="years1">
+            <option v-for="item in years" :key="item.id" :value="item.id">{{item.title}}</option>
+          </select>
+
+        </div>
+
+      </div>
+      <div class="chart" id="qushi" ></div>
+    </div>
+    <div class="chartc">
+      <div class="tool2">
+        <div class="charttitle">商标代理机构和律师事务所数量情况</div>
+        <div class="charttime">
+          <select v-model="region1">
+            <option v-for="item in regions1" :key="item.id" :value="item.id">{{item.title}}</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="chart" id="shuliang"></div>
+    </div>
+    <div class="chartc" style="height:20rem;">
+      <div class="tool2">
+        <div class="charttitle">商标代理公司活跃度分析</div>
+        <div class="charttime">
+          <select v-model="region1">
+            <option v-for="item in regions1" :key="item.id" :value="item.id">{{item.title}}</option>
+          </select>
+        </div>
+
+      </div>
+      <div class="chart" style="height:20rem;" id="hangye"></div>
+    </div>
+  </div>
+</template>
+<script>
+var echarts = require('echarts');
+var chartcolors = ['#eb6100', '#fcc900', '#fff100', '#90c320', '#019e97','#4696ca', '#920784', '#e60412', ];
+var pieColor = ['#FF8F59','#66B3FF'];
+var chart1,chart2,chart3;
+export default {
+
+  data() {
+    return {
+      title:'商标代理分析',
+      active1: 'month',
+      datay: [5, 20, 36, 10, 10, 20],
+      datax: ["2010年", "2011年", "2012年", "2013年", "2014年", "2015年"],
+      hangyes: [
+        { id: "402894815e0370af015e037261840003", title: "化工原料" }
+        , { id: "402894815e0370af015e037482920004", title: "油漆涂料" }
+        , { id: "402894815e0370af015e037abc520006", title: "洗护用品" }
+        , { id: "402894815e039964015e0eea84580008", title: "工业油脂" }
+        , { id: "402894815e039964015e0eebb7e80009", title: "药品制剂" }
+      ],
+      hangye1: '402894815e0370af015e037261840003',
+      year2: '2017',
+      year3: '2017',
+      region4: '1',
+      years1:'2011',
+      years: [
+        { id:'2011', title: '累计'}
+        , { id: '2017', title: '2017年' }
+        , { id: '2016', title: '2016年' }
+        , { id: '2015', title: '2015年' }
+        , { id: '2014', title: '2014年' }
+        , { id: '2013', title: '2013年' }
+      ],
+      //
+      pieData2: [
+            {
+              "provinceCode": "35",
+              "name": "福建省",
+              "value": "179778"
+            },
+            {
+              "provinceCode": "43",
+              "name": "湖南省",
+              "value": "90219"
+            },
+            {
+              "provinceCode": "44",
+              "name": "广东省",
+              "value": "709977"
+            },
+            {
+              "provinceCode": "45",
+              "name": "广西省",
+              "value": "36074"
+            },
+            {
+              "provinceCode": "46",
+              "name": "海南省",
+              "value": "13901"
+            }
+          ],
+      pieData2All: [
+        {
+          "year": "2017",
+          "dataYear": [
+            {
+              "provinceCode": "35",
+              "name": "福建省",
+              "value": "74106"
+            },
+            {
+              "provinceCode": "43",
+              "name": "湖南省",
+              "value": "36755"
+            },
+            {
+              "provinceCode": "44",
+              "name": "广东省",
+              "value": "274802"
+            },
+            {
+              "provinceCode": "45",
+              "name": "广西省",
+              "value": "14329"
+            },
+            {
+              "provinceCode": "46",
+              "name": "海南省",
+              "value": "5056"
+            }
+          ]
+        },
+        {
+          "year": "2016",
+          "dataYear": [
+            {
+              "provinceCode": "35",
+              "name": "福建省",
+              "value": "179778"
+            },
+            {
+              "provinceCode": "43",
+              "name": "湖南省",
+              "value": "90219"
+            },
+            {
+              "provinceCode": "44",
+              "name": "广东省",
+              "value": "709977"
+            },
+            {
+              "provinceCode": "45",
+              "name": "广西省",
+              "value": "36074"
+            },
+            {
+              "provinceCode": "46",
+              "name": "海南省",
+              "value": "13901"
+            }
+          ]
+        },
+        {
+          "year": "2015",
+          "dataYear": [
+            {
+              "provinceCode": "35",
+              "name": "福建省",
+              "value": "125078"
+            },
+            {
+              "provinceCode": "43",
+              "name": "湖南省",
+              "value": "64844"
+            },
+            {
+              "provinceCode": "44",
+              "name": "广东省",
+              "value": "555039"
+            },
+            {
+              "provinceCode": "45",
+              "name": "广西省",
+              "value": "25988"
+            },
+            {
+              "provinceCode": "46",
+              "name": "海南省",
+              "value": "10799"
+            }
+          ]
+        },
+        {
+          "year": "2014",
+          "dataYear": [
+            {
+              "provinceCode": "35",
+              "name": "福建省",
+              "value": "104194"
+            },
+            {
+              "provinceCode": "43",
+              "name": "湖南省",
+              "value": "52335"
+            },
+            {
+              "provinceCode": "44",
+              "name": "广东省",
+              "value": "417254"
+            },
+            {
+              "provinceCode": "45",
+              "name": "广西省",
+              "value": "19222"
+            },
+            {
+              "provinceCode": "46",
+              "name": "海南省",
+              "value": "10588"
+            }
+          ]
+        },
+        {
+          "year": "2013",
+          "dataYear": [
+            {
+              "provinceCode": "35",
+              "name": "福建省",
+              "value": "96511"
+            },
+            {
+              "provinceCode": "43",
+              "name": "湖南省",
+              "value": "41483"
+            },
+            {
+              "provinceCode": "44",
+              "name": "广东省",
+              "value": "324978"
+            },
+            {
+              "provinceCode": "45",
+              "name": "广西省",
+              "value": "16702"
+            },
+            {
+              "provinceCode": "46",
+              "name": "海南省",
+              "value": "7544"
+            }
+          ]
+        }
+      ],
+			pieData3: [
+        { value: '100', name: '农、林、牧、渔业' }
+        , { value: '90', name: '山西' }
+        , { value: '130', name: '电力、热力、燃气及水生产和供应业' }
+        , { value: '160', name: '信息传输、软件和信息技术服务业' }
+        , { value: '150', name: '水利、环境和公共设施管理业' }
+        , { value: '190', name: '福建' }
+        , { value: '180', name: '陕西' }
+        , { value: '200', name: '北京' }
+      ],
+      region1: '3',
+      regions1: [
+        { id: '1', title: '广东' }
+        , { id: '2', title: '福建' }
+        , { id: '3', title: '湖南' }
+        , { id: '4', title: '广东' }
+        , { id: '5', title: '福建' }
+      ],
+      regions4: [{ id: '1', title: '湖南怀化市' }]
+    }
+  },
+  watch:{
+    year2:function(val){
+      this.pieData2=this.pieData2All.filter(item =>{
+        return item.year === val
+      })[0].dataYear
+     // 我在 这里犯过一个特别蠢的错误。。 图表没有加载是因为我this.pieData2没有值，不是需要clear 更不需要dispose
+     //而一个echarts实例只需要init一次就够了
+      // this.drawchart2();
+    }
+  },
+  methods: {
+    drawchart1() {
+      chart1 = echarts.init(document.getElementById('qushi'));
+      chart1.setOption({
+        color: chartcolors,
+        grid: {
+
+        },
+        tooltip: {},
+        xAxis: {
+          show: false,
+          data: this.datax
+        },
+        legend: {
+          orient: 'vertical',
+          bottom: 0,
+          top:-100
+          // data: this.pieData3.map(item => {
+          //   return item.name
+          // })
+        },
+        yAxis: { show: true },
+        series: [{
+          name: '',
+          type: 'pie',
+          radius: [10, 50],
+          center: ['45%', '55%'],
+          roseType: 'radius',
+          data: this.pieData3,
+          label: {
+            normal: {
+              show: true
+            }
+          },
+        }]
+      });
+    },
+    drawchart2(){
+      var chart2 = echarts.init(document.getElementById('shuliang'));
+      chart2.setOption({
+        color:pieColor,
+        title : {},
+        tooltip : {},
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+        },
+        series : [
+            {
+                name: '访问来源',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[
+                    {value:44.49, name:'律师事务所44.49%'},
+                    {value:56, name:'代理机构56%'},
+                ],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+      })
+    },
+    drawchart3() {
+      var myChart = echarts.init(document.getElementById('hangye'));
+      myChart.setOption({
+        title: {},
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {},
+        grid:{
+          show:true,
+        },
+        xAxis:{
+            type: 'category',
+            boundaryGap: false,
+            data: this.datax
+        },
+        // yAxis: {
+        //     type: 'value',
+
+        // },
+        yAxis: [
+            {
+                type: 'value',
+                min: 0,
+                max: 300,
+                interval: 50,
+            },
+            {
+                type: 'value',
+                min: 0,
+                max: 0,
+                interval:0,
+                // axisLabel: {
+                //     formatter: '{value} %'
+                // }
+            }
+        ],
+        series: [
+            {
+                name:'活跃度',
+                type:'line',
+                data:[ 2, 5, 3, 2, 0],
+                markPoint: {},
+                markLine: {
+                    data: []
+                }
+            }
+        ]
+      });
+    },
+
+    changeTime1(type) {
+      this.active1 = type;
+      this.drawchart1();
+    }
+  },
+  mounted: function() {
+    document.body.scrollTop = 0;
+    this.drawchart1();
+    this.drawchart2();
+    this.drawchart3();
+  }
+}
+</script>
+<style lang="less" scoped>
+select {
+  border: #666666 1px solid;
+  color: #333333;
+  height:1.92rem;
+  padding:0 1.73rem;
+  text-align: center;
+}
+.container {
+  padding-bottom: 5rem;
+}
+
+.tabactive {
+  background: #666;
+  color: white;
+}
+
+.chartc {
+  width: 100%;
+  height: 15rem;
+  padding: .5rem;
+  margin-bottom: .5rem;
+  box-sizing: border-box;
+  .tool2 {
+    height: 3rem;
+    width: 100%;
+    line-height: 2rem;
+    .charttitle {
+      text-align: left;
+      font-size: .96rem;
+    }
+  }
+  .tool {
+    height: 3.5rem;
+    width: 100%;
+    line-height: 2rem;
+    .charttitle {
+      text-align: left;
+      font-size: .96rem;
+    }
+    .charttool {
+      position: absolute;
+      right: 1rem;
+      width: 5rem;
+      height: 1.4rem;
+      background: white;
+      color: #333333;
+      top: .65rem;
+      border-radius: 3px;
+      font-size: .8rem;
+      line-height: 1.5rem;
+      border: 1px solid #19B5FE;
+      text-align: center;
+      div {
+        float: left;
+        width: 50%;
+        height: 100%;
+      }
+    }
+  }
+  .chart {
+    height: 11rem;
+    div{
+      width: 100%;
+      height: 100%;
+      background: palevioletred;
+    }
+  }
+}
+
+.chartc::after {
+  content: " ";
+  position: absolute;
+  right: 15px;
+  height: 1px;
+  border-bottom: 1px solid #D9D9D9;
+  color: #D9D9D9;
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+  left: 15px;
+  margin-top: 1rem;
+}
+</style>

@@ -1,0 +1,84 @@
+<template>
+ <div>
+  <!-- <topComponent :title='title' :showLeft='true'></topComponent> -->
+  <topComponent :title='title' :showLeft='true'></topComponent>
+  <!-- 国际商标入口 -->
+  <div class="door">
+    <div class="xdoor">
+      <ul>
+        <li v-for="item in cun"><div class="images"><img src="" alt=""></div><span>{{item.country}}</span></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { Tab, TabItem, Sticky, Divider, XButton, Swiper, SwiperItem } from 'vux'
+
+export default {
+  components: {
+    Tab,
+    TabItem,
+    Sticky,
+    Divider,
+    XButton,
+    Swiper,
+    SwiperItem
+  },
+  data () {
+    return {
+      title:'',
+      query: true,
+      register: false,
+      query:'',
+      dataList:'',
+      cun:[
+            {'country':'中国','creatTime':'2017-06-05',},
+            {'country':'日本','creatTime':'2017-06-05',},
+            {'country':'泰国','creatTime':'2017-06-05',},
+            {'country':'印度','creatTime':'2017-06-05',},
+      ]
+    }
+  },
+  methods:{
+
+  },
+  mounted(){
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '~vux/src/styles/1px.less';
+@import '~vux/src/styles/center.less';
+.door{
+  width: 100%;
+  margin-top: 2.75rem;
+  border-top: 0.01rem solid black;
+}
+.xdoor{
+  padding: 1rem 0rem;
+  overflow: hidden;
+  width: 21rem;
+  height: 10rem;
+  margin:auto;
+}
+.xdoor ul li{
+  width:5rem;
+//   height:3rem;
+  float:left;
+//   background:#d0d0d0;
+  margin: 1rem;
+  list-style: none;
+  text-align: center;
+//   line-height: 5rem;
+}
+.images{
+  background:#d0d0d0;  
+}
+.xdoor ul li span{
+
+
+}
+</style>

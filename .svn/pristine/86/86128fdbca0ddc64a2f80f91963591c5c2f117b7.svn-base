@@ -1,0 +1,101 @@
+<template>
+  <div class="container">
+    <searchTop :searchtype="stype"></searchTop>
+    <div class="search-middle">
+      <div>
+        <span>最近搜索</span>
+        <i class="iconfont icon-delete" @click="deleteResent"></i>
+      </div>
+      <div><p><span v-for="i in SearchList" @click="gotoResult">{{i}}</span></p></div>
+      <div>
+        <span>热门商标</span>
+      </div>
+      <div>
+        <p><span v-for="i in result">{{i.dataName}}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import {Panel, Icon, Flexbox, FlexboxItem, CellBox} from 'vux'
+export default {
+    components: {
+      Panel,
+      Icon,
+      Flexbox,
+      FlexboxItem,
+      CellBox
+    },
+    data () {
+      return {
+        result: '',
+        SearchList: '',
+        stype:''
+      }
+    },
+    created () {
+      this.stype = this.$route.params.stype;
+    },
+    methods: {
+      loginOut () {
+        this.$router.push('/login') // 暂时不做处理只去登录页面
+      },
+      getData () {
+        api.getPopularBrand().then((res) => {
+          this.result = res.results
+        })
+        api.getNearSearchList(1576).then((res) => {
+          this.SearchList = res.results
+        })
+      },
+      deleteResent () {
+        api.deleteCaption().then((res) => {
+          console.log(res)
+        })
+      },
+      gotoResult () {
+        this.$router.push('/searchResult/' + '天职咨询')
+      }
+    },
+    mounted: function () {
+      document.body.scrollTop = 0
+      this.getData()
+    }
+  }
+</script>
+<style lang="less" scoped>
+  .search-middle {
+    background-color: white;
+    padding-top: 3rem;
+    color: #333;
+    div:nth-child(odd) {
+      margin: 1rem;
+      height: 2rem;
+      span {
+        font-weight: bold;
+      }
+      i {
+        float: right;
+      }
+    }
+    div:nth-child(even) {
+      margin: 1rem;
+      p {
+        font-size: 1rem;
+        span {
+          margin: 0 .5px;
+          display: inline-block;
+          color: #333;
+          background-color: #fbfbfb;
+          padding: .4rem;
+          font-size: 1rem;
+          border-radius: 3px;
+          line-height: 2rem;
+        }
+      }
+    }
+  }
+
+</style>

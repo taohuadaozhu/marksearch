@@ -1,0 +1,142 @@
+<template>
+    <div style="height:100%;">
+        <topComponent title='登录' :showLeft='false'>
+        </topComponent>
+        <div class="content">
+            <tab style="margin-top: 2rem;" custom-bar-width="60px">
+                <tab-item selected @on-item-click="tabclick(1)">密码登录</tab-item>
+                <tab-item @on-item-click="tabclick(0)">验证码登录</tab-item>
+            </tab>
+            <div v-if="loginType">
+                <group title="">
+                    <x-input title="手机" name="mobile" v-model="tel" placeholder="手机号码" keyboard="number" is-type="china-mobile"></x-input>
+                    <x-input title="密码" type="password" v-model="pass" name="mobile" placeholder="密码"></x-input>
+                </group>
+                <group title="">
+                    <x-button type="primary" @click.native="login">登录</x-button>
+                </group>
+                <div class="toreg" @click="toreg">马上注册</div>
+            </div>
+            <div v-else>
+                <group title="">
+                    <x-input title="手机" name="mobile" placeholder="手机号码" keyboard="number" is-type="china-mobile"></x-input>
+                    <x-input title="验证码" class="weui-vcode" placeholder="短信验证码" v-model="capchar">
+                        <x-button slot="right" type="primary" mini @click.native="getCapchar">{{countdown===0?'获取验证码':countdown+'s'}}</x-button>
+                    </x-input>
+                </group>
+                <group title="">
+                    <x-button type="primary" @click.native="login">登录</x-button>
+                </group>
+                <div class="toreg" @click="toreg">马上注册</div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import api from '../../fetch/api'
+import { XInput, Group, XButton, Cell, TabItem, Tab } from 'vux'
+export default {
+    components: {
+        XInput,
+        XButton,
+        Group,
+        Cell,
+        Tab,
+        TabItem,
+
+    },
+    name: 'hello',
+    data() {
+        return {
+            loginType: true,
+            tel: '',
+            capchar: '',
+            pass: '',
+            countdown: 0,
+        }
+    },
+    methods: {
+        getCapchar() {
+            if (this.countdown === 0) {
+                if (!/^[0-9]{11}$/.test(this.tel)) {
+                    this.$vux.toast.text('手机号码错误！')
+                    return false
+                }
+                this.countdown = 60;
+                this.timedCount()
+                api.getCapchar(this.tel)
+                    .then(res => {
+                        this.$vux.toast.text('发送成功,五分钟内有效！');
+                    })
+            }
+        },
+        timedCount() {
+            let _this = this;
+            let s = setInterval(function() {
+                _this.countdown--;
+                if (_this.countdown === 0) {
+                    clearTimeout(s)
+                }
+            }, 1000);
+        },
+        login() {
+            if (!/^[0-9]{11}$/.test(this.tel)) {
+                this.$vux.toast.text('手机号码错误！')
+                return false
+            }
+            if (this.loginType) {
+                if (this.pass === "") {
+                    this.$vux.toast.text('密码为空！')
+                    return false
+                }
+            } else {
+                if (this.capchar === "") {
+                    this.$vux.toast.text('验证码为空！')
+                    return false
+                }
+            }
+
+            let data = this.loginType ? {
+                mobile: this.tel,
+                password: this.pass,
+            } : {
+                    mobile: this.tel,
+                    captcha: this.capchar,
+                };
+            api.login(data)
+                .then(res => {
+                    let user = res.currentUser;
+                    localStorage.setItem('mark_id',user.id);
+                    localStorage.setItem('mark_mobile',user.mobile);
+                    // console.log(window.localStorage.mark_id);
+                    this.$router.push('/');
+                }).catch(error => {
+                    // console.log(error,99999)
+                })
+        },
+        tabclick(type) {
+            this.loginType = Boolean(type);
+        },
+        toreg() {
+            console.log(8888)
+            this.$router.push('register');
+        },
+    },
+}
+</script>
+
+<style scoped>
+.toreg {
+    font-size: 0.8rem;
+    color: #3E82F7;
+    margin-top: .5rem;
+    text-align: left;
+}
+
+.content {
+
+    height: 100%;
+    background: white;
+}
+</style>

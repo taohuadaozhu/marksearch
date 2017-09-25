@@ -1,0 +1,189 @@
+<template>
+  <div class="top">
+    <div class="backcontent">
+      <div @click='goBack' class="back" v-if='iSshow'></div>
+    </div>
+
+    <div class="topsearchdiv" v-show="!showInput">
+      <span>商标名</span>
+      <img src="../assets/image/RightArrow@2x.png">
+    </div>
+
+    <div class="topsearch" :class="{active:showInput}">
+      <input type="search" placeholder="请输入商标名" @focus="showInput=true" @blur="showInput=false">
+    </div>
+
+    <div class="btn-q" @click="change">
+      <i class="iconfont icon-caidan" style="color: #fff;font-size: 1.54rem;"></i>
+    </div>
+
+    <div class="searchOption" :class="{active:showSelect}" @click="showSelect=!showSelect">
+      <ul>
+        <li>注册号</li>
+        <li>申请人</li>
+        <li>商标名</li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      backTit: '返回',
+      iSshow: true,
+      showInput: false,
+      showSelect: false,
+      results: [],
+      holder: '',
+      value: ''
+    }
+  },
+  methods: {
+    goBack() {
+      this.$router.back()
+    },
+    tabclick(type) {
+      this.loginType = Boolean(type)
+    },
+    toreg() {
+      this.$router.push('register')
+    },
+    setFocus() {
+      this.$refs.search.setFocus()
+    },
+    // resultClick (item) {
+    //   window.alert('you click the result item: ' + JSON.stringify(item))
+    // },
+    change: function() {
+      this.$emit('increment')
+    },
+    getResult(val) {
+      // this.results = val ? getResult(this.value) : []
+    },
+    onSubmit() {
+      this.$store.commit('changeSearch', this.value);
+      this.$refs.search.setBlur()
+      let stype = this.$options.propsData.searchtype;
+      if (stype === "goods") {
+        this.$router.push({ path: 'goodsItem', query: { searchkey: this.value } })
+      } else if (stype === "mark") {
+        this.$router.push({ path: 'markSearchResults', query: { searchkey: this.value, stype: 'mark' } })
+      } else {
+        this.$router.push({ path: 'typeItem', query: { searchkey: this.value, stype: stype } })
+      }
+
+    },
+    onFocus() {
+      let stype = this.$options.propsData.searchtype;
+      if (this.$route.path != '/search') {
+        if (stype === 'multipleSearch') {
+          this.$router.push('/multipleSearch')
+        } else {
+          this.$router.push({ path: 'search', query: { stype: stype } })
+        }
+      }
+    },
+    onCancel() {
+      console.log('on cancel')
+    },
+    goCancel() {
+      //...省略
+      this.$router.push('register')
+    }
+  },
+  props: ['placeholder', 'back', 'showLeft', 'searchtype'],
+  mounted: function() {
+    if (this.$options.propsData.placeholder !== undefined) this.holder = this.$options.propsData.placeholder;
+    if (this.$options.propsData.back !== undefined) this.backTit = this.$options.propsData.back;			//如果传递了back,则左侧返回文字显示的是传入的值
+    if (this.$options.propsData.showLeft !== undefined) this.iSshow = this.$options.propsData.showLeft;	//如果传递了showLeft(默认是true),则该值决定左侧是否显示
+  }
+}
+
+</script>
+<style lang="less" scoped>
+.top {
+  width: 100%;
+  height: 3.8rem;
+  line-height: 3.8rem;
+  box-sizing: border-box;
+  border-bottom: 1px solid #dcdcdc;
+  font-size: .75rem;
+  color: #fff;
+  background-image: url(../assets/image/top.png);
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  .backcontent {
+    position: absolute;
+    top: 50%;
+    left: 1.15rem;
+    transform: translateY(-50%);
+    .back {
+      height: 1.07rem;
+      width: 1.07rem;
+      box-sizing: border-box;
+      border-width: 0px 0px 2px 2px;
+      border-color: #fff;
+      border-style: solid;
+      transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+    }
+  }
+  .topsearchdiv {
+    height: 100%;
+    text-align: center;
+    >span {
+      font-size: 1.25rem;
+      &+img {
+        width: 1.1rem;
+      }
+    }
+  }
+  .topsearch {
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 1.15rem;
+    overflow: hidden;
+    position: absolute;
+    top: 50%;
+    right: 3.7rem;
+    transform: translateY(-50%);
+    transition: all 500ms;
+    &.active {
+      width: 77%;
+    }
+    >input {
+      width: 100%;
+      height: 100%;
+      padding: 0 1.23rem;
+      vertical-align: top;
+      background: url(../assets/image/sousuo@2x.png) right center no-repeat;
+      background-size: contain;
+      background-color: #fff;
+    }
+  }
+  .btn-q {
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    right: 1.15rem;
+    transform: translateY(-50%);
+  }
+  .searchOption {
+    color: #fff;
+    background-color: rgba(64, 55, 168, 0.95);
+    height: 0;
+    overflow: hidden;
+    >ul {
+      li {
+        font-size: 1.1rem;
+        text-align: center;
+      }
+    }
+    .active {
+      height: 11.4rem;
+    }
+  }
+}
+</style>

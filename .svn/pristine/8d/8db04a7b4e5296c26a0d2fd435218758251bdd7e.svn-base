@@ -1,0 +1,212 @@
+import axios from 'axios'
+import Vue from 'vue'
+import  { ToastPlugin } from 'vux'
+
+Vue.use(ToastPlugin)
+let _this = this;
+// axios 配置
+axios.defaults.timeout = 5000;
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.baseURL = 'http://10.10.10.119:8070/';
+// axios.defaults.baseURL = 'http://znipe.tzecc.com:8070/';
+// axios.defaults.baseURL = 'http://10.1.20.57:8070/';
+// axios.defaults.baseURL = 'http://10.1.19.225:8070/';
+// axios.defaults.baseURL = 'http://10.1.20.53:8070/';
+// axios.defaults.baseURL = 'http://192.168.31.255:8070/';
+// axios.defaults.baseURL = process.env.API_ROOT;
+axios.defaults.withCredentials = true;
+
+//POST传参序列化------------------此方法没有
+axios.interceptors.request.use((config) => {
+  if (config.method === 'post') {
+    // config.data = qs.stringify(config.data);
+  }
+  return config
+}, (error) => {
+  //  _.toast("错误的传参", 'fail');
+  return Promise.reject(error)
+})
+
+//返回状态判断
+axios.interceptors.response.use((res) => {
+  if (!(res.data.errorCode === "200")) {
+    let code = res.data.errorCode;
+    var apptoast = new Vue({
+      el: '#toast'
+    })
+    /**
+     * 3005验证码错误
+     * 3007", errorMsg: "手机号已存在！
+     * 3030", errorMsg: "密码错误
+     * 3000", errorMsg: "用户名不存在
+     * 3037","errorMsg":"无搜索结果
+     */
+    if (code === "3005"||code === "3007"||code === "3030"||code === "3030"||code === "3000"||code === "3037") {
+      apptoast.$vux.toast.show({
+        text: res.data.errorMsg,
+        type: 'warn'
+      })
+    } else {
+      apptoast.$vux.toast.show({
+        text: '系统错误！',
+        type: 'warn'
+      })
+    }
+    return Promise.reject(res)
+  }
+  return res
+}, (error) => {
+  return Promise.reject(error)
+})
+
+export function post (url, params) {
+  return new Promise((resolve, reject) => {
+    axios.post(url, params)
+      .then(response => {
+        resolve(response.data)
+      }, err => {
+        reject(err)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
+
+export function get (url, params) {
+  return new Promise((resolve, reject) => {
+    axios.get(url, params)
+      .then(response => {
+        resolve(response.data)
+      }, err => {
+        console.log(err, 22)
+        reject(err)
+      })
+      .catch((error) => {
+        console.log(33)
+        reject(error)
+      })
+  })
+}
+
+export default {
+  /**
+   * 用户登录
+   */
+  login (params) {
+    return post('login', params)
+  },
+  /**
+   * 用户注册
+   */
+  mobileRegist (params) {
+    return post('mobile/register', params)
+  },
+  getCapchar (tellphone) {
+    return get('sendCaptcha/' + tellphone)
+  },
+  /**
+   * 最近搜索查询
+   */
+  getNearSearchList (params) {
+    return get('searchQuery/getNearSearchList/' + params)
+  },
+  /**
+   * 请求热门商标
+   */
+  getPopularBrand () {
+    return get('searchQuery/queryHotTopic/')
+  },
+  /**
+   * 删除搜索
+   */
+  deleteCaption (params) {
+    return post('searchQuery/clearNearSearch', params)
+  },
+  /**
+   * 获取行业类型
+   */
+  getProfessionTypeList () {
+    return get('profession/getProfessionTypeList/')
+  },
+  /**
+   * 请求新闻列表
+   */
+  getNewList (params) {
+    return get('news/listByNewsType/' + params)
+  },
+  /**
+   * 请求城市列表
+   */
+  getCityList () {
+    return get('address/listAddress')
+  },
+  /**
+   * 请求收藏列表
+   */
+  getCollectList (param) {
+    return post('user/trademark/allcollected', param)
+  },
+  /**
+   * 请求新闻详情
+   */
+  getNewListcontent (params) {
+    return get('news/findByNewsId/' + params)
+  },
+  /**
+   * 收藏动作
+   */
+  collect (params) {
+    return post('user/trademark/collect', params)
+  },
+  /**
+   * 在搜索商品，返回商品相关尼斯类型
+   */
+  advancedSearchReturnType (params) {
+    return post('searchQuery/advancedSearchReturnType', params)
+  },
+   /**
+   * 获取尼斯第一分类标题列表
+   */
+
+  getFirstAllTitle (params) {
+    return get('nice/getFirstAllTitle', params)
+  },
+  /**
+   * 获取商品商标详细信息
+   */
+  getshopList(params){
+    return post('regBasic/getRegBasicInformation',params)
+  },
+  /**
+   * 在搜索商品/商标返回商标数据结果集
+   */
+  getresultList(params){
+    return post('searchQuery/brandAdvancedSearch',params)
+  },
+  /**
+   * 获取尼斯第二分类标题列表的头部
+   */
+  getTitleType (params) {
+    return get('nice/getFirstLevelById/' + params)
+  },
+  /**
+   * 获取尼斯第二分类标题列表
+   */
+  getErAllTitle (params) {
+    return get('nice/getSecondTitle/' + params)
+  },
+  /**
+   * 获取第二分类详细信息
+   */
+  getErcontent (params) {
+    return get('nice/getSecondLevelById/' + params)
+  },
+  /**
+   * 商标详情中的服务项
+   */
+  getMarkDetailService (params) {
+    return post('regBasic/getGoodsCode',params)
+  }
+}
+

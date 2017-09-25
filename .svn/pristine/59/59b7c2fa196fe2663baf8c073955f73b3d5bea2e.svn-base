@@ -1,0 +1,347 @@
+<template>
+  <div class="container">
+    <searchTop @increment="dj" :searchtype="stype" :placeholder="placeholder"></searchTop>
+    <filterComponent @getsearchresult="getConditions" type="goods"></filterComponent>
+    <div class="middle">
+      <div class="totaldiv">
+        <p>
+          <span>{{searchkey}}</span>
+          <!-- 共找到
+                    <span>{{total}}</span>条记录 -->
+        </p>
+      </div>
+      <!-- <div class="searchflex"> -->
+      <scroller style="top: 10rem;" height="80%" :on-infinite="infinite">
+        <div style="height:44px;"></div>
+        <searchItem v-for="item in dataList" :fag="fage" :itemdata="item" :key="item.id"></searchItem>
+      </scroller>
+      <!-- </div> -->
+    </div>
+    <transition name="fade" mode="out-in">
+      <router-view></router-view>
+    </transition>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+
+export default {
+  data() {
+    return {
+      fage: false,
+      dataList: [],
+      searchkey: '',
+      total: 0,
+      stype: 'goods',
+      codes: [],
+      newdata: [''],
+      condition: {},
+      placeholder: this.$store.state.searchString
+    }
+  },
+  methods: {
+    getConditions(params) {
+      this.dataList = [];
+      this.condition = params;
+      this.top = 1
+      this.bottom = 18
+      this.codes = [];
+      this.$store.state.goodsItems.map(item => {
+        item.secondClass.map(item1 => {
+          item1.thirdClassType.map(item11 => {
+            if (item11.select) {
+              this.codes.push(item11.goodsCode);
+            }
+          })
+        })
+      })
+      this.getdata(0)
+    },
+    infinite(done) {
+
+      if (this.newdata.length === 0) {
+        setTimeout(() => {
+          done(true)
+        }, 1500)
+        return;
+      }
+
+      setTimeout(() => {
+        var start = this.bottom
+        this.getdata(start)
+        this.bottom = this.bottom + 18
+        done()
+      }, 1500)
+
+    },
+    dj: function() {
+      this.fage = !this.fage
+    },
+    getdata(start) {
+
+      // this.$store.commit('changeLoading')
+      // console.log(this.$store.state.showLoading,' to get data');
+      let postdata = {
+        goodsName: this.searchkey,
+        goodsCodeList: this.codes,
+        begin: start,                            //开始（分页信息）
+        limit: 18,
+        more: {
+          brandType: "",
+          brandFormType: "",
+          landMarInfo: ""
+        }                            //数据条数（分页信息）
+      }
+      if (this.condition.wellKnownTm) {
+        postdata.wellKnownTm = this.condition.wellKnownTm
+      }
+      if (this.condition.secondClassIndustryList) {
+        postdata.secondClassIndustryList = this.condition.secondClassIndustryList
+      }
+      if (this.condition.more) {
+        postdata.more = this.condition.more
+      }
+      console.log(postdata)
+      api.getresultList(postdata).then((res) => {
+        this.newdata = res.dataList;
+        res.dataList.map(item => {
+          this.dataList.push(item)
+        })
+        this.$store.commit('changeLoading')
+        // console.log(this.$store.state.showLoading,' already get data');
+        this.total = this.dataList.length;
+      }).catch((res) => {
+        this.$store.commit('changeLoading')
+        //  console.log(this.$store.state.showLoading,' already get data');
+        this.newdata = []
+      })
+    }
+  },
+  mounted: function() {
+    this.top = 0
+    this.bottom = 18
+    document.body.scrollTop = 0
+    //这里应该可以直接用vuex的值  但是之后应该改成session存值
+    if (this.$route.query.searchkey) {
+      this.searchkey = this.$route.query.searchkey;
+    } else {
+      this.searchkey = this.$store.state.searchString;
+    }
+
+
+    // this.stype = this.$route.query.stype;
+    if (window.localStorage.nearGoods.split(',').indexOf(this.searchkey) === -1) {
+      window.localStorage.nearGoods = window.localStorage.nearGoods === '' ? this.searchkey : window.localStorage.nearGoods + ',' + this.searchkey;
+    }
+
+    this.codes = [];
+    this.$store.state.goodsItems.map(item => {
+      item.secondClass.map(item1 => {
+        item1.thirdClassType.map(item11 => {
+          if (item11.select) {
+            this.codes.push(item11.goodsCode);
+          }
+        })
+      })
+    })
+    this.getdata(0)
+
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '~vux/src/styles/1px.less';
+html {
+  overflow-y: hidden;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .15s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0
+}
+
+.middle {
+  margin-top: 6.5rem;
+}
+
+.searchflex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.totaldiv {
+  width: 100%;
+  overflow: hidden;
+  p {
+    font-size: .8rem;
+    color: #999999;
+    span {
+      color: #333;
+    }
+    span:first-child {
+      display: inline-block;
+      margin: .8rem 1rem;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.newslist {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+.newsbar {
+  margin-top: .5rem;
+  img {
+    height: 1.2rem;
+    margin-left: 1rem;
+    float: left;
+  }
+  span {
+    display: inline-block;
+    color: #333333;
+    font-size: 1.02rem;
+    font-weight: bold;
+    float: left;
+    line-height: 1.25rem;
+    margin-left: 5px;
+  }
+  .more {
+    float: right;
+    color: #999999;
+    font-weight: normal;
+    margin-right: 1.3rem;
+  }
+}
+
+.more::after {
+  content: " ";
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  border-width: 2px 2px 0 0;
+  border-color: #C8C8CD;
+  border-style: solid;
+  -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+  transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+  position: relative;
+  top: -2px;
+  position: absolute;
+  top: 50%;
+  margin-top: -8px;
+  right: 8px;
+}
+
+.flex-demo {
+  background-clip: padding-box;
+  height: 3rem;
+  margin-top: 5px;
+  .text {
+    position: relative;
+    left: 1rem;
+    font-size: .95rem;
+    bottom: 2.8rem;
+  }
+  img {
+    width: 100%;
+    height: 3rem;
+  }
+}
+
+.container {
+  background-color: white;
+  padding-bottom: 5rem;
+  .space,
+  .topsearch,
+  .iconmenu,
+  .picmenu,
+  .newsbar {
+    position: relative;
+    width: 100%;
+    min-height: 1.5rem;
+  }
+  .iconmenu {
+    margin-top: 1.2rem;
+    box-sizing: content-box;
+    .icon-content {
+      float: left;
+      width: 25%;
+      text-align: center;
+      img {
+        width: 3rem;
+      }
+      div {
+        font-size: .9rem;
+      }
+      .icon-title-black {
+        color: #333333;
+      }
+    }
+    .icon-content:first-child {
+      margin-left: -1rem;
+    }
+  }
+
+  .iconmenu-blue {
+    margin-top: 1rem;
+    box-sizing: content-box;
+    height: 2.8rem;
+    .icon-content {
+      float: left;
+      width: 25%;
+      text-align: center;
+      img {
+        width: 2rem;
+      }
+      div {
+        font-size: .9rem;
+        color: #333333;
+      }
+    }
+    .icon-content:firstChild {
+      margin-left: -1rem;
+    }
+  }
+  .topsearch {
+    padding: 1rem;
+    height: 13rem;
+    background-color: #37bdf8;
+    color: white;
+    .in-s {
+      position: relative;
+      width: 100%;
+      padding-right: 2.55rem;
+      box-sizing: border-box;
+      .in-icon {
+        position: absolute;
+        right: 2.5rem;
+        top: .75rem;
+        font-size: 1.1rem;
+      }
+      input {
+        box-sizing: content-box;
+        border: 0;
+        border-radius: 3px;
+        background-color: white;
+        height: 1.5rem;
+        width: 100%;
+        font-size: .8rem;
+        padding: .55rem 0;
+        padding-left: .55rem;
+      }
+    }
+    .stitle {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  }
+}
+</style>

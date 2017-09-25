@@ -1,0 +1,275 @@
+<template>
+  <div class="container">
+    <searchTop style="border-bottom:0rem"></searchTop>
+    <div v-for="item in getTitltContent" style="" v-if="show" class="explain">
+      <div>{{item.content}}</div>
+    </div>
+    <div class="detail-one">
+      <div class="top-two" v-for="item in getTitltContent" style="z-index:0;">
+        <div class="title" >第{{item.sort}}类 {{item.title}}</div>
+        <div class="text">{{item.content}}</div>
+      </div>
+      </div>
+    <div class="clear"></div>
+    <div class="note" v-for="item in getTitltContent">
+      <div class="annotation" v-html="item.note" style="font-size: .9rem;margin:.5rem;" ></div>
+      <div class="graypanel">
+        <div class="propanel">
+          <ul style="margin-bottom:4rem">
+            <li v-for="(i,item) in ErAllTitle" v-bind:class="{ active1 : false }" @click.stop="selectPro(item,item.id)">【{{i.similar_code}}】</li>
+          </ul>
+        </div>
+        <!-- 信息 -->
+          <div class="regionpanel">
+            <span v-for="item in number">{{item}}</span>
+          <div class="title-content" v-for="i in dataTitltContent">
+            <div v-html="i.content" style="font-size: .8rem;margin: .5rem .5rem .5rem 9.5rem"></div>
+          </div>
+        <div class="footer-annotation" v-for="i in dataTitltContent">
+          <div v-html="i.note" style="" ></div>
+        </div>
+        </div>
+        <div style="clear:both"></div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import api from '../../fetch/api'
+  import {Panel, Icon, Flexbox, FlexboxItem, CellBox} from 'vux'
+  export default {
+    components: {
+      Panel,
+      Icon,
+      Flexbox,
+      FlexboxItem,
+      CellBox,
+
+    },
+    data () {
+      return {
+        show:false,
+        show1:true,
+        scroll: '',
+        isOpenPro: false,
+        isOpenState: false,
+        isOpenIndustry: false,
+        number: [],
+        isb: false,
+        ErAllTitle: [],
+        dataList: [],
+        getTitltContent: [],
+        dataTitltContent: [],
+      }
+    },
+    created () {
+    },
+    methods: {
+      // 滚轮变化吸顶效果hk
+      menu() {
+        console.log(this.scroll)
+        console.log('top',document.body)
+        this.scroll = document.body.scrollTop;
+        if(this.scroll===0){
+          this.show=false;
+          this.show1=true;
+        }
+        if(this.scroll>0){
+          // document.body.scrollTop= 300
+          this.show=true;
+          this.show1=false;
+        }
+      },
+      //
+
+      selectPro (item) {
+        this.number = this.ErAllTitle[item].title
+        api.getErcontent(this.ErAllTitle[item].id).then((res) => {
+          console.log(res)
+          this.dataTitltContent = res.dataList
+        })
+      },
+      getEr () {
+        api.getErAllTitle(this.$route.query.id).then((res) => {
+          this.ErAllTitle = res.dataList
+        })
+      },
+      getTitlt () {
+        api.getTitleType(this.$route.query.id).then((res) => {
+          this.getTitltContent = res.dataList
+        })
+      }
+    },
+    prop: [],
+    mounted: function () {
+      // document.body.scrollTop = 0
+      window.addEventListener('scroll', this.menu)
+      this.getEr()
+      this.getTitlt()
+    }
+  }
+</script>
+<style lang="less" scoped>
+  .container {
+    margin-top:-1rem;
+    .detail-one{
+      font-size: .9rem;
+      margin-top: 3.5rem;
+      .top-two{
+          img{
+            width: 4rem;
+            height: 4rem;
+            border: 1px solid gray;
+            display: inline-block;
+            position: absolute;
+            left: -4.5rem;
+          }
+      }
+      .top-two{
+        height: 100%;
+        float: left;
+        margin: .5rem .5rem;
+        position: relative;
+        .title{
+          font-size: 1.5rem;
+          font-weight: 600;
+          text-align:center;
+          background:linear-gradient(90deg, #007bef, #53a6ff);
+          color:#fff;
+          height:3rem;
+          line-height:3rem;
+          border-radius:5px;
+          width:22.5rem
+        }
+        .text{
+          text-indent:25px;
+          margin-top:0.8rem;
+        }
+      }
+      .annotation{
+        margin: 1rem .5rem;
+        font-size: .9rem;
+      }
+
+    }
+    .graypanel {
+      width: 100%;
+      top: 96px;
+      height: 96%;
+      // 信息
+      .regionpanel{
+        span {
+          font-size: .9rem;
+          font-weight: 600;
+        }
+      }
+      .propanel, .graycontent {
+        float: left;
+        width: 40%;
+        height: 80%;
+        overflow: auto;
+        background-color: white;
+        li {
+          font-size: .75rem;
+          line-height: 2rem;
+          padding-left: 8px;
+          background:;
+          color:#999;
+        }
+        li:hover{
+          color:#007bfe;
+        }
+      }
+      .graycontent {
+        text-align: center;
+        width: 50%;
+        height: auto;
+        max-height: 70%;
+        margin: 25% 25%;
+        vertical-align: middle;
+      }
+      .mover{
+        width: 100%;
+        background: #ffffff;
+        .mover-content{
+          .mover-header{
+            padding: 1rem;
+            border-bottom:1px solid #c0c0c0;
+          }
+          .mover-btn {
+            ul {
+              height: 1rem;
+              padding: 2rem;
+              li {
+                width: 3rem;
+                height: 1.5rem;
+                text-align: center;
+                padding-top: .5rem;
+                margin-left: .7rem;
+                border-radius: 3px;
+                float: left;
+                overflow: hidden;
+                background: #F2F2F2;
+                list-style: none;
+                font-size: .2rem;
+              }
+            }
+          }
+        }
+        .mover-footer{
+          height: 3rem;
+          border-top:1px solid #c0c0c0;
+          span{
+            font-size: 1rem;
+            text-align: center;
+            position: absolute;
+            width: 6rem;
+            height: 1.5rem;
+            border-radius: 3px;
+            border: 1px solid #797979;
+            margin-top: .8rem;
+            left:5rem;
+          }
+          span:last-child{
+            margin-left: 8rem;
+          }
+        }
+      }
+    }
+    li:hover{
+      background: #f2f2f2;
+    }
+    .clear{
+      clear: both;
+    }
+  }
+  .ql-align-center{
+    color:#007bfe!important
+  }
+  .explain{
+    margin-top:0.2rem;
+    background:#19B5FE;
+    position:fixed;
+    z-index:1;
+    width:100%;
+    background:linear-gradient(90deg, #007bef, #53a6ff);
+    padding:0.5rem
+  }
+  .explain div{
+    font-size:0.9rem;
+    padding:0rem .5rem;
+    color:white;
+  }
+  .footer-annotation{
+    margin-left:9.3rem
+  }
+  .footer-annotation div{
+    font-size: .8rem;
+    padding-top:0.5rem;
+    margin-bottom:4rem
+  }
+  .title-content{
+    font-size: .8rem;
+    margin: .5rem .5rem .5rem .5rem
+  }
+</style>

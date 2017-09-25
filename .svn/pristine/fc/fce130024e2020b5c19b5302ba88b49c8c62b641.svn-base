@@ -1,0 +1,24 @@
+<template>
+<div class="container">
+	<div>分析页</div>
+</div>
+</template>
+<script>
+	export default {
+	    data () {
+	        return {
+	        	data:{},
+	        	
+	        }
+	    },
+	    methods :{
+	        loginOut(){
+	        	this.$router.push('/login');	//暂时不做处理只去登录页面
+	        },
+	        
+	    },
+	    mounted:function(){
+	    	document.body.scrollTop = 0;
+	    }
+	}
+</script>

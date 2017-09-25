@@ -1,0 +1,78 @@
+body,
+button,
+dd,
+div,
+dl,
+dt,
+h1,
+h2,
+h3,
+h4,
+li,
+ol,
+p,
+ul {
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  outline: 0;
+}
+html{
+    background-color: #F6F6F6
+}
+.content {
+  margin-top: 3rem;
+  padding: .5rem;
+}
+
+.middle {
+  margin-top: 5.5rem;
+}
+
+
+.weui-select {
+  padding: 5px !important;
+  line-height: 27px !important;
+}
+.weui-search-bar{
+    background-color: inherit !important;
+}
+.weui-search-bar__form{
+    background-color: white !important;
+    border-radius: 3px;
+}
+.weui-cell__bd:after {
+  content: " ";
+  border-width: 0 1px 1px 0 !important;
+  border-color: white !important;
+  right: 10px !important;
+  z-index: 99;
+}
+.weui-search-bar__form:after{
+    content: " ";
+    border: 0 !important;
+   background-color: inherit !important;
+}
+.weui-search-bar__cancel-btn{
+    color: #fff !important;
+}
+
+.weui-tabbar{
+    position: fixed !important;
+}
+input{
+    outline: 0;
+}
+.weui-cell_select .weui-select {
+    color: white;
+    font-size: 1rem;
+    background-color: #19B5FE;
+}
+.vux-label{
+    font-size: 1rem;
+    color: #999999;
+}
+.weui-cell__ft {
+    text-align: right;
+    color: #333 !important;
+}

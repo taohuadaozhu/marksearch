@@ -1,0 +1,192 @@
+<template>
+  <div class="top">
+    <div class="backcontent">
+      <div   @click='goBack' class="back" v-if='iSshow'></div>
+    </div>
+
+
+    <div class="topsearchdiv">
+      <search class="topsearch" :auto-fixed="false" v-model="value" position="absolute" auto-scroll-to-top top="0" @on-focus="onFocus" @on-cancel="onCancel" @on-submit="onSubmit" ref="search" :placeholder="holder"></search>
+    <!-- <div @click="onSubmit" class="confirm">确定</div> -->
+    </div>
+
+    <p class="btn-q" @click="change"><i class="iconfont icon-caidan" style="color: #fff;font-size: 20px;"></i></p>
+  </div>
+</template>
+<script>
+import { XInput, Group, XButton, Cell, TabItem, Tab, Search, Selector } from 'vux'
+export default {
+  components: {
+    XInput,
+    XButton,
+    Group,
+    Cell,
+    Tab,
+    TabItem,
+    Search,
+    Selector
+  },
+  data() {
+    return {
+      backTit: '返回',
+      iSshow: true,
+      results: [],
+      holder: '',
+      value: ''
+    }
+  },
+  methods: {
+    goBack() {
+      this.$router.back()
+    },
+    tabclick(type) {
+      this.loginType = Boolean(type)
+    },
+    toreg() {
+      this.$router.push('register')
+    },
+    setFocus() {
+      this.$refs.search.setFocus()
+    },
+    // resultClick (item) {
+    //   window.alert('you click the result item: ' + JSON.stringify(item))
+    // },
+    change: function() {
+      this.$emit('increment')
+    },
+    getResult(val) {
+      // this.results = val ? getResult(this.value) : []
+    },
+    onSubmit() {
+      this.$refs.search.setBlur()
+      let stype = this.$options.propsData.searchtype;
+      if (stype === "goods") {
+        console.log(this.value,4444)
+        this.$router.push({path: 'goodsItem',query:{searchkey:this.value} })
+      } else if (stype === "mark") {
+        //t/:searchkey/:stype
+        this.$router.push({path:'searchresult',query:{searchkey:this.value,stype:'mark'}})
+      } else {
+
+      }
+
+    },
+    onFocus() {
+      // let stype = this.$options.propsData.searchtype;
+      // // console.log(stype)
+      // if (stype === "goods") {
+      //   this.$router.push('/search/goods')
+      // } else if (stype === "mark") {
+      //   this.$router.push('/search/mark')
+      // } else {
+
+      // }
+
+    },
+    onCancel() {
+      console.log('on cancel')
+    },
+    goCancel() {
+      //...省略
+      this.$router.push('register')
+    }
+  },
+  props: ['placeholder', 'back', 'showLeft', 'searchtype'],
+  mounted: function() {
+    if (this.$options.propsData.placeholder !== undefined) this.holder = this.$options.propsData.placeholder;
+    if (this.$options.propsData.back !== undefined) this.backTit = this.$options.propsData.back;			//如果传递了back,则左侧返回文字显示的是传入的值
+    if (this.$options.propsData.showLeft !== undefined) this.iSshow = this.$options.propsData.showLeft;	//如果传递了showLeft(默认是true),则该值决定左侧是否显示
+  }
+}
+
+</script>
+<style lang="less" scoped>
+
+.weui-cell__bd {
+  color: red;
+}
+
+.weui-select {
+  padding: 5px;
+}
+
+.vux-search-box {
+  margin-left: 2rem;
+  width: auto;
+}
+
+.vux-search-fixed {
+  background-color: inherit;
+}
+
+.weui-search-bar {
+  background-color: inherit;
+}
+
+.top {
+  .topkey {
+    color: white;
+    width: 3.8rem;
+    font-size: .8rem;
+    float: left;
+    margin-left: 2rem;
+    margin-right: -100%;
+  }
+  .topsearchdiv {
+    width: 100%;
+    float: left;
+    width: 100%;
+    .topsearch {}
+  }
+  background-color: #19B5FE;
+  font-size: .75rem;
+  height: 2.75rem;
+  position: fixed;
+  top: 0;
+  z-index: 9;
+  width: 100%;
+  border-bottom: 1px solid #dcdcdc;
+  .backcontent{
+   position: absolute;
+    top: 23%;
+    left: 9px;
+    margin-top: -4px;
+    padding: 10px;
+    .back {
+    height: 12px;
+    width: 12px;
+    border-width: 0px 0px 2px 2px;
+    border-color: #fff;
+    border-style: solid;
+    -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+    transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+    position: relative;
+    top: -2px;
+
+  }
+  }
+
+
+  a,
+  span {
+    text-decoration: none;
+    position: absolute;
+    left: .9375rem;
+    top: 0;
+    cursor: pointer;
+  }
+  .btn-q {
+    position: absolute;
+    right: .9375rem;
+    top: .6375rem;
+    img {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+  h1 {
+    text-align: center;
+    font-size: .9375rem;
+  }
+}
+</style>

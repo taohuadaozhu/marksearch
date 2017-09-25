@@ -1,0 +1,344 @@
+<template>
+  <div class="container">
+    <div class="topsearch">
+      <div class="searchbar">
+        <div class="in-s">
+          <icon class="in-icon" type="search"></icon>
+          <input placeholder="请输入商品名称" @focus="gotoSearch('goods')">
+        </div>
+      </div>
+      <div class="banner">
+        <swiper :list="demo01_list" auto style="width:100%;margin:0 auto;" :show-dots='false' :show-desc-mask='false' height="320px" dots-class="custom-bottom" dots-position="center"></swiper>
+      </div>
+    </div>
+
+    <div style="padding: 0 1rem;position: relative;top: -113px;margin-bottom: -65px;">
+      <div class="iconmenu">
+        <div class="icon-content" @click="gotoSearch('mark')">
+          <img src="../../assets/image/jinsichaxun@3x.png">
+          <div>近似查询</div>
+        </div>
+        <div class="icon-content" @click="gotoSearch('typelist')">
+          <img src="../../assets/image/leisichaxun@3x.png">
+          <div>类别查询</div>
+        </div>
+        <div class="icon-content" @click="gotoEchart()">
+          <img src="../../assets/image/zhonghefenxi@3x.png">
+          <div>综合分析</div>
+        </div>
+        <div class="icon-content" @click="gotoMultipleSearch()">
+          <img src="../../assets/image/zhonghechaxun@3x.png">
+          <div>综合查询</div>
+        </div>
+        <div class="icon-content">
+          <img src="../../assets/image/guojizhuce@3x.png">
+          <div>国际注册</div>
+        </div>
+        <div class="icon-content" @click="gotoEncyclopedia()">
+          <img src="../../assets/image/shangbiaobaike@3x.png">
+          <div>商标百科</div>
+        </div>
+      </div>
+
+      <div class="picmenu">
+        <flexbox>
+          <flexbox-item>
+            <div class="flex-demo" @click="policyService(0)"><img src="../../assets/image/png-zc.png">
+              <div class="text">政策服务</div>
+            </div>
+          </flexbox-item>
+          <flexbox-item>
+            <div class="flex-demo" @click="policyService(1)"><img src="../../assets/image/png-fl.png">
+              <div class="text">法律法规</div>
+            </div>
+          </flexbox-item>
+        </flexbox>
+        <flexbox>
+          <flexbox-item>
+            <div class="flex-demo" @click="policyService(2)"><img src="../../assets/image/png-xw.png">
+              <div class="text">新闻资讯</div>
+            </div>
+          </flexbox-item>
+          <flexbox-item>
+            <div class="flex-demo" @click="policyService(3)"><img src="../../assets/image/png-hy.png">
+              <div class="text">行业资讯</div>
+            </div>
+          </flexbox-item>
+        </flexbox>
+      </div>
+
+      <div class="newsbar">
+        <span>资讯阅读</span>
+        <span class="more" @click="policyService(4)">更多</span>
+      </div>
+      <div class="newslist">
+        <newsItem :data="result"></newsItem>
+      </div>
+    </div>
+
+    <!-- <searchTop></searchTop>
+                                                                        <div class="middle">
+                                                                            <searchItem v-for="i in 4" ></searchItem>
+                                                                            <newsItem v-for="i in 3" :itemdata="data" ></newsItem>
+                                                                        </div> -->
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { Panel, Icon, Flexbox, FlexboxItem, CellBox, Swiper } from 'vux'
+const baseList = [{
+  url: 'javascript:',
+  img: require('@/assets/image/banner@3x.png')
+},
+  // {
+  //   url: 'javascript:',
+  //   img: require('@/assets/image/bannerlanse@3x.png')
+  // },
+  // {
+  //   url: 'javascript:',
+  //   img: '../../static/banner.png'
+  // }
+]
+export default {
+  components: {
+    Panel,
+    Icon,
+    Flexbox,
+    FlexboxItem,
+    CellBox,
+    Swiper
+  },
+  data() {
+    return {
+      demo01_list: baseList,
+      result: ''
+    }
+  },
+  demo01_onIndexChange(index) {
+    this.demo01_index = index
+  },
+  methods: {
+    onSwiperItemIndexChange(index) {
+      //        console.log('demo item change', index)
+    },
+    demo01_onIndexChange(index) {
+      this.demo01_index = index
+    },
+    loginOut() {
+      this.$router.push('login')// 暂时不做处理只去登录页面
+    },
+    gotoSearch(type) {
+      if (type === 'typelist') {
+        this.$router.push('typesearch')
+      } else {
+        this.$router.push({ path: 'search', query: { stype: type } })
+      }
+    },
+    gotoEchart() {
+      this.$router.push('analysis')
+    },
+    gotoMultipleSearch() {
+      // this.$router.push('multipleSearch')
+    },
+    policyService(type) {
+      this.$router.push({ path: 'newsList', query: { type: type } })
+    },
+    gotoRegister(){
+      this.$router.push('/internationalRegister')
+    },
+    // 商标百科页
+    gotoEncyclopedia() {
+      this.$router.push('/trademarkencyclopedia/')
+    },
+    getNew() {
+      let newType = 2
+      api.getNewList(newType).then((res) => {
+        this.result = res.dataList
+      })
+    },
+  },
+  mounted: function() {
+    document.body.scrollTop = 0
+    this.getNew();
+    if (localStorage.mark_mobile && localStorage.mark_mobile != 'undefined' && localStorage.mark_mobile != '') {
+      if (window.localStorage.nearGoods) {
+        let post1 = {
+          keywordType: "1",
+          phoneId: localStorage.mark_mobile,
+          keywords: window.localStorage.nearGoods.split(',')
+        }
+        api.saveNearSearch(post1).then((res) => { })
+      } else {
+        localStorage.setItem('nearGoods', '');
+      }
+
+      if (window.localStorage.nearBrand) {
+        let post1 = {
+          keywordType: "0",
+          phoneId: localStorage.mark_mobile,
+          keywords: window.localStorage.nearBrand.split(',')
+        }
+        api.saveNearSearch(post1).then((res) => { })
+      } else {
+        localStorage.setItem('nearBrand', '');
+      }
+
+      if (window.localStorage.nearType) {
+        let post1 = {
+          keywordType: "5",
+          phoneId: localStorage.mark_mobile,
+          keywords: window.localStorage.nearType.split(',')
+        }
+        api.saveNearSearch(post1).then((res) => { })
+      } else {
+        localStorage.setItem('nearType', '');
+      }
+
+    } else {
+      if (!window.localStorage.nearGoods) {
+        localStorage.setItem('nearGoods', '');
+      }
+      if (!window.localStorage.nearBrand) {
+        localStorage.setItem('nearBrand', '');
+      }
+      if (!window.localStorage.nearType) {
+        localStorage.setItem('nearType', '');
+      }
+
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '~vux/src/styles/1px.less';
+.container {
+  .picmenu,
+  .newsbar {
+    width: 100%;
+    margin-top: 15px;
+  }
+  .iconmenu {
+    color: #000000;
+    overflow: hidden;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 6px 5px #f2f2f2;
+    padding-bottom: 1.5rem;
+    .icon-content {
+      float: left;
+      width: 33%;
+      text-align: center;
+      margin-top: 1.5rem;
+      img {
+        width: 3rem;
+      }
+      div {
+        font-size: .9rem;
+      }
+      .icon-title-black {
+        color: #333333;
+      }
+    }
+  }
+
+  .topsearch {
+    padding-right: 0;
+    background-color: #37bdf8;
+    color: white;
+    .searchbar {
+      width: 100%;
+      position: absolute;
+      z-index: 999;
+      top: 5px;
+      text-align: center;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+    .banner {
+      margin-left: -1rem;
+    }
+    .in-s {
+      position: relative;
+      width: 100%;
+      padding: 0 0.55rem;
+      box-sizing: border-box;
+      .in-icon {
+        position: absolute;
+        right: 1.5rem;
+        top: .65rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+      input {
+        opacity: 0.6;
+        box-sizing: content-box;
+        border: 0;
+        border-radius: 40px;
+        background-color: #000;
+        height: 1rem;
+        width: 92%;
+        font-size: .8rem;
+        padding: .55rem 0;
+        padding-left: 1.55rem;
+        &::placeholder {
+          color: #fff;
+        }
+      }
+    }
+    .stitle {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  }
+}
+
+.newsbar {
+  overflow: hidden;
+  margin-top: .5rem;
+  img {
+    height: 1.2rem;
+    float: left;
+  }
+  span {
+    display: inline-block;
+    color: #666666;
+    font-size: 1.02rem;
+    float: left;
+    line-height: 1.25rem;
+    margin-left: 5px;
+  }
+  .more {
+    float: right;
+    color: #999999;
+    font-weight: normal;
+    margin-right: 0.3rem;
+    &::after {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-top: -8px;
+      border-width: 2px 2px 0 0;
+      border-color: #C8C8CD;
+      border-style: solid;
+      transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+    }
+  }
+}
+
+.flex-demo {
+  background-clip: padding-box;
+  height: 3rem;
+  margin-top: 5px;
+  .text {
+    position: relative;
+    left: 1rem;
+    font-size: .95rem;
+    bottom: 2.8rem;
+  }
+  img {
+    width: 100%;
+    height: 3rem;
+  }
+}
+</style>

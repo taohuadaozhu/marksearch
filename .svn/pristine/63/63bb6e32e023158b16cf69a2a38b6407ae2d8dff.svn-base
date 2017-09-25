@@ -1,0 +1,5 @@
+//引入组件
+import topComponent from "./top";		//top
+export default {
+    topComponent,
+}

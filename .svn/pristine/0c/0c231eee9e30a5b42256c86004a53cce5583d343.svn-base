@@ -1,0 +1,307 @@
+<template>
+  <div class="container">
+    <div class="topsearch">
+      <div style="width:100%;margin-top:1rem;">
+        <div class="in-s">
+          <icon class="in-icon" type="search"></icon>
+          <input placeholder="搜索商标名称/企业/代理" @focus="gotoSearch">
+        </div>
+      </div>
+      <div class="banner">
+        <swiper :list="demo01_list" auto style="width:100%;margin:0 auto;" height="180px" dots-class="custom-bottom" dots-position="center"></swiper>
+      </div>
+    </div>
+
+    <div class="iconmenu">
+      <div class="icon-content">
+        <img src="../../assets/image/png-js.png">
+        <div>近似查询</div>
+      </div>
+      <div class="icon-content">
+        <img src="../../assets/image/se-sale.png">
+        <div>类别查询</div>
+      </div>
+      <div class="icon-content">
+        <img src="../../assets/image/se-analysis.png">
+        <div>综合分析</div>
+      </div>
+    </div>
+    <div class="iconmenu-blue">
+      <div class="icon-content">
+        <img src="../../assets/image/png-hw.png">
+        <div>海外查询</div>
+      </div>
+      <div class="icon-content">
+        <img src="../../assets/image/se-reg-national.png">
+        <div>国际注册</div>
+      </div>
+      <div class="icon-content">
+        <img src="../../assets/image/se-reg-national.png">
+        <div>商标申请</div>
+      </div>
+    </div>
+    <div style="margin-top: 1.7rem;" class="picmenu">
+      <flexbox>
+        <flexbox-item>
+          <div class="flex-demo" @click="policyService(0)"><img src="../../assets/image/png-zc.png">
+            <div class="text">政策服务</div>
+          </div>
+        </flexbox-item>
+        <flexbox-item>
+          <div class="flex-demo" @click="policyService(1)"><img src="../../assets/image/png-fl.png">
+            <div class="text">法律法规</div>
+          </div>
+        </flexbox-item>
+      </flexbox>
+
+    </div>
+    <div class="picmenu">
+      <flexbox>
+        <flexbox-item>
+          <div class="flex-demo" @click="policyService(2)"><img src="../../assets/image/png-xw.png">
+            <div class="text">新闻资讯</div>
+          </div>
+        </flexbox-item>
+        <flexbox-item>
+          <div class="flex-demo" @click="policyService(3)"><img src="../../assets/image/png-hy.png">
+            <div class="text">行业资讯</div>
+          </div>
+        </flexbox-item>
+      </flexbox>
+    </div>
+    <div class="newsbar">
+      <img src="../../assets/image/icon-news.png"><span>资讯</span>
+      <span class="more" @click="gotoList">更多</span>
+    </div>
+    <div class="newslist">
+      <newsItem :data="result"></newsItem>
+    </div>
+
+    <!-- <searchTop></searchTop>
+                                        <div class="middle">
+                                            <searchItem v-for="i in 4" ></searchItem>
+                                            <newsItem v-for="i in 3" :itemdata="data" ></newsItem>
+                                        </div> -->
+  </div>
+</template>
+<script>
+  import api from '../../fetch/api'
+  import {Panel, Icon, Flexbox, FlexboxItem, CellBox, Swiper} from 'vux'
+  const baseList = [{
+    url: 'javascript:',
+    img: 'https://static.vux.li/demo/2.jpg',
+    title: '送你一朵fua'
+  }, {
+    url: 'javascript:',
+    img: 'https://static.vux.li/demo/2.jpg',
+    title: '送你一辆车'
+  }, {
+    url: 'javascript:',
+    img: 'https://static.vux.li/demo/3.jpg',
+    title: '送你一次旅行'
+  }]
+  export default {
+    components: {
+      Panel,
+      Icon,
+      Flexbox,
+      FlexboxItem,
+      CellBox,
+      Swiper
+    },
+    data () {
+      return {
+        demo01_list: baseList,
+        result: ''
+      }
+    },
+    methods: {
+      onSwiperItemIndexChange (index) {
+        console.log('demo item change', index)
+      },
+      demo01_onIndexChange (index) {
+        this.demo01_index = index
+      },
+      loginOut () {
+        this.$router.push('/login')// 暂时不做处理只去登录页面
+      },
+      gotoSearch () {
+        this.$router.push('/search/'+'goods')
+      },
+      gotoList () {
+        this.$router.push('/newsList')
+      },
+      policyService (type) {
+        this.$router.push('/newsList/' + type)
+      },
+      getNew () {
+        let newType = 2
+        api.getNewList(newType).then((res) => {
+          this.result = res.dataList
+          console.log(this.result)
+        })
+      }
+
+    },
+    mounted: function () {
+      document.body.scrollTop = 0
+      this.getNew()
+    }
+  }
+</script>
+<style lang="less" scoped>
+  @import '~vux/src/styles/1px.less';
+  .newslist {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    box-sizing: border-box;
+  }
+
+  .newsbar {
+    margin-top: .5rem;
+    img {
+      height: 1.2rem;
+      margin-left: 1rem;
+      float: left;
+    }
+    span {
+      display: inline-block;
+      color: #333333;
+      font-size: 1.02rem;
+      font-weight: bold;
+      float: left;
+      line-height: 1.25rem;
+      margin-left: 5px;
+    }
+    .more {
+      float: right;
+      color: #999999;
+      font-weight: normal;
+      margin-right: 1.3rem;
+    }
+  }
+
+  .more::after {
+    content: " ";
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    border-width: 2px 2px 0 0;
+    border-color: #C8C8CD;
+    border-style: solid;
+    -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+    transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+    position: relative;
+    top: -2px;
+    position: absolute;
+    top: 50%;
+    margin-top: -8px;
+    right: 8px;
+  }
+
+  .flex-demo {
+    background-clip: padding-box;
+    height: 3rem;
+    margin-top: 5px;
+    .text {
+      position: relative;
+      left: 1rem;
+      font-size: .95rem;
+      bottom: 2.8rem;
+    }
+    img {
+      width: 100%;
+      height: 3rem;
+    }
+  }
+
+  .container {
+    .space,
+    .topsearch,
+    .iconmenu,
+    .picmenu,
+    .newsbar {
+      position: relative;
+      width: 100%;
+      min-height: 1.5rem;
+    }
+    .iconmenu {
+      margin-top: 1.2rem;
+      box-sizing: content-box;
+      height: 2.8rem;
+      color:#000000;
+      .icon-content {
+        float: left;
+        width: 33%;
+        text-align: center;
+        img {
+          width: 2rem;
+
+        }
+        div {
+          font-size: .9rem;
+        }
+        .icon-title-black {
+          color: #333333;
+        }
+      }
+
+    }
+
+    .iconmenu-blue {
+      margin-top: 2rem;
+      box-sizing: content-box;
+      height: 2.8rem;
+      .icon-content {
+        float: left;
+        width: 33%;
+        text-align: center;
+        img {
+          width: 2rem;
+        }
+        div {
+          font-size: .9rem;
+          color: #333333;
+        }
+      }
+    }
+    .topsearch {
+      padding: 1rem;
+      height: 15.4rem;
+      background-color: #37bdf8;
+      color: white;
+      .banner{
+        margin-left: -1rem;
+        margin-top: 1.5rem;
+      }
+      .in-s {
+        position: relative;
+        width: 100%;
+        padding-right: 2.55rem;
+        box-sizing: border-box;
+        .in-icon {
+          position: absolute;
+          left: 1rem;
+          top: .75rem;
+          font-size: 1.1rem;
+          font-weight: 600;
+        }
+        input {
+          box-sizing: content-box;
+          border: 0;
+          border-radius: 40px;
+          background-color: white;
+          height: 1.5rem;
+          width: 92%;
+          font-size: .8rem;
+          padding: .55rem 0;
+          padding-left: 2.55rem;
+        }
+      }
+      .stitle {
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+    }
+  }
+</style>

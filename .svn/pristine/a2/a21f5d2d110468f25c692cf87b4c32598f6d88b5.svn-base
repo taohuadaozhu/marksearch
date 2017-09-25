@@ -1,0 +1,96 @@
+<template>
+    <div>
+        <topComponent :title="title" :showLeft='true'></topComponent>
+        <div class="content">
+          <div class="newslist">
+            <newsItem :data="dataList"></newsItem>
+          </div>
+        </div>
+    </div>
+</template>
+
+<script>
+  import api from '../../fetch/api'
+export default {
+    components: {
+      api
+    },
+    data () {
+      return {
+        dataList: [],
+        title:''
+      }
+    },
+    methods: {
+      getdatalist () {
+        api.getNewList(this.$route.query.newsType).then((res) => {
+          this.dataList = res.dataList
+        })
+      },
+      // getHomeNewsMore(){
+      //   api.getNewMore().then((res) => {
+      //     this.dataList = res.dataList
+      //   })
+      // }
+    },
+    mounted () {
+      this.getdatalist()
+      // this.getHomeNewsMore()
+      console.log(typeof this.$route.query.newsType)
+      switch(this.$route.query.newsType){
+        case 0:
+        this.title ='政策服务';
+        break;
+        case 1:
+        this.title ='法律法规';
+        break;
+        case 2:
+        this.title ='新闻资讯';
+        break;
+        case 3:
+        this.title ='行业资讯';
+        break;
+        case 4:
+        this.title ='最新资讯';
+        break;
+      }
+    }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+.content{
+	background-color: white;
+	height: 100%;
+	p{
+		font-size:.95rem;
+		margin-left: .5rem;
+		line-height: 2rem;
+	}
+}
+.toreg {
+    font-size: 0.8rem;
+    color: #3E82F7;
+    margin-top: .5rem;
+}
+
+h1,
+h2 {
+    font-weight: normal;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+a {
+    color: #42b983;
+}
+</style>

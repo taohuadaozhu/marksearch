@@ -1,0 +1,195 @@
+<template>
+  <div>
+    <searchTop  :searchtype="stype" :placeholder="placeholder"></searchTop>
+    <div class="content">
+      <p>为您匹配到以下类似群和商品项：</p>
+      <typeItem v-for="(item,index) in goodsItems1" :itemFirst="item" :index="index"></typeItem>
+    </div>
+  </div>
+</template>
+
+<script>
+import api from '../../fetch/api'
+import { mapGetters } from 'vuex'
+export default {
+  data() {
+    return {
+      loginType: true,
+      msg: 'Welcome to Your Vue.js App',
+      value: 'shihuimei',
+      searchkey: '',
+      results: [],
+      goodsItems1: [],
+      stype: 'typelist',
+      placeholder:this.$store.state.searchString
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'getItems'
+    ]),
+  },
+  watch: {
+    'getItems': {
+      handler: function(val, oldval) {
+      },
+      deep: true
+    }
+  },
+
+  mounted() {
+    this.searchkey = this.$route.query.searchkey;
+    if (window.localStorage.nearType.split(',').indexOf(this.searchkey) === -1) {
+        window.localStorage.nearType = window.localStorage.nearType === '' ? this.searchkey : window.localStorage.nearType + ',' + this.searchkey;
+      }
+    let postdata = {
+      goodsName: this.searchkey,
+      keywordType: '1',
+      phoneId: window.localStorage.mark_mobile
+    }
+    //根据传来的商品名获取尼斯分类
+    api.advancedSearchReturnType(postdata).then((res) => {
+      //给返回的数组最后一项加一个标示符，在子项中用做是否选中的状态
+      let dataList = res.dataList;
+      dataList.map(item => {
+        item.secondClass.map(item1 => {
+          item1.thirdClassType.map(item11 => {
+            item11.select = false;
+          })
+        }
+        )
+      })
+      //存在vuex内，之后再搜索结果页会用
+      // this.$store.commit('changeGoodsItems', dataList);
+      this.goodsItems1 = dataList;
+      if(this.goodsItems1.length===0){
+        this.$vux.toast.text('你搜索的"'+this.searchkey+'"在‘商品与服务区分表’中不存在!')
+      }
+    })
+
+  },
+  methods: {
+    resetItem() {
+      // 我若直接给this.goodsItems1 = this.goodsItems1.map这样赋值，，则报错
+      this.goodsItems1.map(item => {
+        item.secondClass.map(item1 => {
+          item1.thirdClassType.map(item11 => {
+            item11.select = false;
+          })
+        }
+        )
+      })
+      this.$store.commit('changeGoodsItems', this.goodsItems1);
+    },
+    gotoResult() {
+      let codes = [];
+      this.$store.state.goodsItems.map(item => {
+        item.secondClass.map(item1 => {
+          item1.thirdClassType.map(item11 => {
+            if (item11.select) {
+              codes.push(item11.goodsCode);
+            }
+          })
+        }
+        )
+      })
+      if (codes.length > 0) {
+        this.$router.push({path:'searchresult',query:{searchkey:this.searchkey,stype:'goods'}})
+      } else {
+        this.$vux.toast.text('请至少选择一项商品项！')
+      }
+
+    },
+    login() {
+      this.$router.push('/')
+    },
+    tabclick(type) {
+      this.loginType = Boolean(type)
+    },
+
+    setFocus() {
+      this.$refs.search.setFocus()
+    },
+    resultClick(item) {
+      window.alert('you click the result item: ' + JSON.stringify(item))
+    },
+    getResult(val) {
+      this.results = val ? getResult(this.value) : []
+    },
+    onSubmit() {
+      this.$refs.search.setBlur()
+      this.$vux.toast.show({
+        type: 'text',
+        position: 'top',
+        text: 'on submit'
+      })
+    },
+    onFocus() {
+      console.log('on focus')
+    },
+    onCancel() {
+      console.log('on cancel')
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+.fixedbutton {
+  position: fixed;
+  background-color: #ff9900;
+  height: 3rem;
+  bottom: 0;
+  width: 100%;
+  z-index: 999;
+  color: white;
+  line-height: 3rem;
+  div {
+    float: left;
+    width: 50%;
+    text-align: center;
+    height: 100%;
+  }
+  .goon {
+    background-color: #336600;
+    color: white;
+  }
+}
+
+.content {
+  background-color: white;
+  height: 100%;
+  padding-bottom: 5rem;
+  p {
+    font-size: .95rem;
+    margin-left: .5rem;
+    line-height: 2rem;
+  }
+}
+
+.toreg {
+  font-size: 0.8rem;
+  color: #3E82F7;
+  margin-top: .5rem;
+}
+
+h1,
+h2 {
+  font-weight: normal;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+a {
+  color: #42b983;
+}
+</style>

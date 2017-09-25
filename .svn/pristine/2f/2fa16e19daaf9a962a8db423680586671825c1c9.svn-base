@@ -1,0 +1,201 @@
+<template>
+  <div class="container">
+    <x-header :left-options="{backText: ''}" style="background-color: transparent;">商标查询</x-header>
+    <div class="search">
+      <div class="search-item">
+        <div class="search-title">范围查询</div>
+        <div class="search-contain">
+          <div class="search-context" :class="{active:!params.isForeignSearch}" @click="params.isForeignSearch=false">国内</div>
+          <div class="search-context" :class="{active:params.isForeignSearch}" @click="params.isForeignSearch=true">国际</div>
+        </div>
+      </div>
+      <div class="search-item">
+        <div class="search-title">查询内容</div>
+        <div class="search-contain">
+          <select class="search-context active" v-model="selType">
+            <option value="0">商标名</option>
+            <option value="1">注册号</option>
+            <option value="2">申请人</option>
+          </select>
+          <div class="search-content">
+            <input type="search" placeholder="请输入搜索内容" v-model="inputVal" v-on:keyup.13="synthesizeSearch">
+            <button @click="synthesizeSearch">搜索</button>
+          </div>
+        </div>
+      </div>
+      <div class="search-item">
+        <div class="search-title">历史搜索</div>
+        <div class="search-contain">
+          <div class="search-history">
+            <span v-for="item in SearchList" @click="gotoHistory(item)">{{item}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <toast v-model="showPositionValue" type="text" :time="800" width="12em" text="请输入搜索内容" :position="position"></toast>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { XHeader, Toast } from 'vux'
+export default {
+  components: {
+    XHeader,
+    Toast
+  },
+  data() {
+    return {
+      inputVal: '',
+      selType: '0',
+      position: 'default',
+      showPositionValue: false,
+      SearchList: [],
+      data: {
+        phoneId: '',
+        keywordType: 4
+      },
+      params: {
+        brandName: "",                       //商标名
+        regNum: "",                             //商标注册码
+        register: "",                           //商标申请人
+        intCls: [],                             //国际分类
+        isForeignSearch: false,                 //（国际/国内）查询（false：国内，true：国际）
+        wellKnownTm: '',                        //是否驰名
+        begin: 0,                               //分页信息，begin从0开始
+        limit: 18,
+        more: {
+          brandType: "",               //商标类型
+          brandFormType: "",           //商标形式类型
+          landMarInfo: ""              //地理标志
+        }
+      }
+    }
+  },
+  methods: {
+    synthesizeSearch() {
+      if (this.inputVal === '') {
+        this.position = 'middle'
+        this.showPositionValue = true
+        return false;
+      }
+      switch (this.selType) {
+        case '0':
+          this.params.brandName = this.inputVal;
+          break;
+        case '1':
+          this.params.regNum = this.inputVal;
+          break;
+        case '2':
+          this.params.register = this.inputVal;
+          break;
+      }
+      this.$store.commit('changeMultipleSearch', this.params);
+      this.$router.push('/multipleSearchResult')
+    },
+    gotoHistory(name) {
+      this.inputVal = name
+      this.synthesizeSearch()
+    },
+    // 获取历史搜索
+    getData() {
+      api.getNearSearchList(this.data.phoneId).then((res) => {
+        this.SearchList = res.results.synbrand
+      })
+    },
+    // 删除历史搜索
+    deleteResent() {
+      if (this.data.phoneId) {
+        api.deleteCaption(this.data).then((res) => {
+          alert('删除成功')
+          this.getData()
+        })
+      } else {
+        window.localStorage.nearMultipleSearch = '';
+        this.SearchList = []
+      }
+    }
+  },
+  mounted() {
+    this.data.phoneId = localStorage.mark_mobile
+    document.body.scrollTop = 0
+    if (localStorage.mark_mobile && localStorage.mark_mobile != 'undefined' && localStorage.mark_mobile != '') {
+      this.getData()
+    } else {
+      this.SearchList = window.localStorage.nearMultipleSearch.split(',').reverse();
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+.container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-height: 100%;
+  background: url('../../assets/image/multipleBg.png') center center no-repeat;
+  background-size: cover;
+  .search {
+    padding: 0 15px 30px;
+    .search-item {
+      .search-title {
+        color: #fff;
+        font-size: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+      .search-contain {
+        display: flex;
+        height: 3.46rem;
+        line-height: 3.46rem;
+        .search-context {
+          flex: 1;
+          border: 1px solid #fff;
+          border-radius: 5px;
+          color: #fff;
+          background-color: transparent;
+          text-align: center;
+          &:first-child {
+            margin-right: 1.8rem;
+          }
+          &.active {
+            color: #2c3e50;
+            background-color: #fff;
+          }
+        }
+        .search-content {
+          flex: 2.5;
+          border-radius: 5px;
+          background-color: #fff;
+          padding-left: 15px;
+          position: relative;
+          >button {
+            width: 5.5rem;
+            height: 90%;
+            border-radius: 6px;
+            color: #fff;
+            background-color: #FFD200;
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+          }
+        }
+        .search-history {
+          width: 100%;
+          height: 12rem;
+          border-radius: 5px;
+          background-color: #fff;
+          padding: 15px;
+          >span {
+            padding: 0.4rem 1rem;
+            color: #666666;
+            background-color: #f8f8f8;
+            border-radius: 3px;
+            margin-right: 15px;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

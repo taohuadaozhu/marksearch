@@ -1,0 +1,109 @@
+<template>
+  <div class="container">
+    <searchTop :searchtype="stype" :placeholder="placeholder"></searchTop>
+    <div class="search-middle">
+      <div>
+        <span>最近搜索</span>
+        <i class="iconfont icon-delete" @click="deleteResent(data)"></i>
+      </div>
+      <div><p><span v-for="i in SearchList" v-if="" @click="gotoResult">{{i.brand}}</span></p></div>
+      <div>
+        <span>热门商标</span>
+      </div>
+      <div>
+        <p><span v-for="i in result">{{i.dataName}}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import api from '../../fetch/api'
+import {Panel, Icon, Flexbox, FlexboxItem, CellBox} from 'vux'
+export default {
+   components: {
+      Panel,
+      Icon,
+      Flexbox,
+      FlexboxItem,
+      CellBox
+    },
+  data () {
+      return {
+        result: '',
+        SearchList: '',
+        stype:'',
+        placeholder:''
+      }
+    },
+    created () {
+      this.stype = this.$route.params.stype;
+      if(this.stype==='goods'){
+        this.placeholder = '请输入商品名称'
+      }else{
+this.placeholder = '请输入您想查询的商标名称'
+      }
+    },
+    methods: {
+      loginOut () {
+        this.$router.push('/login') // 暂时不做处理只去登录页面
+      },
+      getData () {
+        api.getPopularBrand().then((res) => {
+          this.result = res.results
+        })
+        api.getNearSearchList(157).then((res) => {
+          this.SearchList = res.results
+          console.log(this.SearchList.good)
+        })
+      },
+      deleteResent (data) {
+        api.deleteCaption(data).then((res) => {
+          alert('删除成功')
+        })
+      },
+      gotoResult () {
+        this.$router.push('/searchResult/' + '天职咨询')
+      }
+    },
+  mounted: function () {
+    this.data.phoneId = localStorage.mark_id
+    document.body.scrollTop = 0
+    this.getData()
+  }
+}
+</script>
+<style lang="less" scoped>
+  .search-middle {
+    background-color: white;
+    padding-top: 3rem;
+    color: #333;
+    div:nth-child(odd) {
+      margin: 1rem;
+      height: 2rem;
+      span {
+        font-weight: bold;
+      }
+      i {
+        float: right;
+      }
+    }
+    div:nth-child(even) {
+      margin: 1rem;
+      p {
+        font-size: 1rem;
+        span {
+          margin: 0 .5px;
+          display: inline-block;
+          color: #333;
+          background-color: #fbfbfb;
+          padding: .4rem;
+          font-size: 1rem;
+          border-radius: 3px;
+          line-height: 2rem;
+        }
+      }
+    }
+  }
+
+</style>

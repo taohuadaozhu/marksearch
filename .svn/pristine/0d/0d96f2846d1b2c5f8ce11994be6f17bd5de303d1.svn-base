@@ -1,0 +1,148 @@
+<template>
+    <div>
+        <div class="service-item">
+            <div class="stitle">
+                <span>{{data.name}}</span>
+                
+            </div>
+            <div class="scontent">
+                <div v-for="item in data.children">
+                    <span>{{item.name}}</span>
+                    <icon type="success-no-circle"></icon>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+import { Tabbar, TabbarItem, Group, Cell, Icon } from 'vux'
+export default {
+    components: {
+        Tabbar,
+        TabbarItem,
+        Group,
+        Cell,
+        Icon
+    },
+    data() {
+        return {
+            region: '地区',
+            showPanel: false,
+            isOpenState: false,
+            isOpenIndustry: false,
+            
+        }
+    },
+    props:['data'],
+    methods: {
+        selectPro() {
+
+        },
+        loginOut() {
+            this.$router.push('/login');	//暂时不做处理只去登录页面
+        },
+        gotoSearch() {
+            this.$router.push('/search');
+        },
+        openPro() {
+            this.isOpenPro = true;
+        },
+        openIndustry() {
+            this.isOpenIndustry = true;
+        },
+        openState() {
+            this.isOpenState = true;
+        },
+        setRegion(i) {
+            this.region = '石家庄' + i;
+        }
+
+    },
+    mounted: function() {
+        document.body.scrollTop = 0;
+        console.log(this.$options.propsData.data)
+    }
+}
+</script>
+<style lang="less" scoped>
+.service-item {
+    padding: .5rem;
+    width: 100%;
+    height: auto;
+    font-size: 1rem;
+    box-sizing: border-box;
+    .stitle {
+        width: 100%;
+        height: 2.5rem;
+        span {
+            font-weight: bold;
+        }
+        div {
+            float: right;
+            background-color: #e4f9ff;
+            color: #40bcfb;
+            padding: .3rem;
+        }
+    }
+    .scontent {
+        background-color: #f6f6f6;
+        border-radius: 4px;
+        font-size: .8rem;
+        box-sizing: content-box;
+        div {
+            padding: 0 .5rem;
+            line-height: 2rem;
+            i{
+                float: right;
+    margin-top: .5rem;
+            }
+        }
+        div:not(:first-child):after {
+            content: " ";
+            position: absolute;
+            right: 0;
+            height: 1px;
+            border-top: 1px solid #D9D9D9;
+            color: #D9D9D9;
+            -webkit-transform-origin: 0 0;
+            transform-origin: 0 0;
+            -webkit-transform: scaleY(0.5);
+            transform: scaleY(0.5);
+            left: 15px;
+            right: 15px;
+        }
+    }
+}
+
+.graypanel {
+    position: fixed;
+    width: 100%;
+    z-index: 9999;
+    background-color: rgba(99, 99, 99, .5);
+    top: 0;
+    height: 100%;
+
+    .graycontent {
+        text-align: center;
+        width: 50%;
+        height: auto;
+        max-height: 70%;
+        margin: 25% 25%;
+        vertical-align: middle;
+        overflow-y: auto;
+    overflow-x: hidden;
+    background-color: white;
+    li {
+      font-size: .75rem;
+      line-height: 2rem;
+      padding-left: 8px;
+      border-bottom: 1px solid #dcdcdc;
+    }
+    }
+}
+
+.active {
+    background-color: #dcdcdc;
+}
+</style>

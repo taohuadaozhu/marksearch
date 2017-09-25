@@ -1,0 +1,168 @@
+<template>
+ <div>
+  <topComponent :title='title' :showLeft='true'></topComponent>
+  <div class="content" style="padding-bottom:0.4rem">
+    <tab>
+      <tab-item selected @on-item-click="onItemClick">申请注册</tab-item>
+      <tab-item @on-item-click="onItemClick">制度法规</tab-item>
+    </tab>
+  </div>
+      <!--  -->
+  <div>
+    <!-- 申请注册 -->
+    <div class="query" v-if="query">
+      <ul>
+        <li v-for="item in query" ><span>{{item.title}}</span><span>{{item.createTime}}</span></li>
+      </ul>
+    </div>
+  </div>
+  <!-- 国际商标入口 -->
+  <div class="door">
+    <span class="doorTitle">商标局官方入口</span>
+    <div class="xdoor">
+      <ul>
+        <li v-for="item in cun" @click="gotoContinent()">{{item}}</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+</template>
+<script>
+import api from '../../fetch/api'
+import { Tab, TabItem, Sticky, Divider, XButton, Swiper, SwiperItem } from 'vux'
+
+export default {
+  components: {
+    Tab,
+    TabItem,
+    Sticky,
+    Divider,
+    XButton,
+    Swiper,
+    SwiperItem
+  },
+  data () {
+    return {
+      title:'国际注册',
+      query: true,
+      register: false,
+      query:[],
+      dataList:'',
+      cun:['亚洲','欧洲','非洲','北美洲','南美洲','大洋洲']
+    }
+  },
+  created(){
+
+  },
+  methods:{
+    get(){
+      var divName = document.getElementsByClassName("door")[0];
+      var divWidth = divName.offsetWidth;
+      var spanName = document.getElementsByClassName("doorTitle")[0];
+      var spanWidth = spanName.offsetWidth;
+      spanName.style.left = (divWidth-spanWidth)/2 + 'px';
+      var positionLeft = (spanName.style.left)/36 + 'rem';
+      spanName.style.left = positionLeft;
+    },
+    onItemClick(index){
+      if (index == 0) {
+        this.query = true,
+          this.register = false,
+          this.sellOut = false,
+          this.problem = false,
+        api.getQuery(index).then((res) => {
+          this.query = res.dataList;
+          console.log(this.query)
+        });
+      }
+      if (index == 1) {
+        this.query = false,
+          this.register = true
+        api.getQuery(index).then((res) => {
+          this.query = res.dataList;
+          console.log(this.query)
+        });
+      }
+    },
+    // 跳转洲际
+    gotoContinent(){
+      this.$router.push({path:'continent',})
+    }
+  },
+  mounted(){
+    this.get()
+      api.getQuery(0).then((res) => {
+        this.query = res.dataList;
+        console.log(this.query)
+      });
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '~vux/src/styles/1px.less';
+@import '~vux/src/styles/center.less';
+.box {
+  padding: 15px;
+}
+.active-6-1 {
+  color: rgb(252, 55, 140) !important;
+  border-color: rgb(252, 55, 140) !important;
+}
+.active-6-2 {
+  color: #04be02 !important;
+  border-color: #04be02 !important;
+}
+.active-6-3 {
+  color: rgb(55, 174, 252) !important;
+  border-color: rgb(55, 174, 252) !important;
+}
+.tab-swiper {
+  background-color: #fff;
+  height: 100px;
+}
+.door{
+  width: 100%;
+  position: fixed;
+  bottom: 1rem;
+  border-top: 0.01rem solid black;
+}
+.door span{
+  position: absolute;
+  top: -0.7rem;
+  background: #fff;
+  z-index: 1;
+  padding: 0 0.5rem;
+  font-size: 0.7rem;
+}
+.xdoor{
+  padding: 1rem 0rem;
+  overflow: hidden;
+  width: 18rem;
+  height: 14rem;
+  margin:auto;
+}
+.xdoor ul li{
+  width:4rem;
+  height:4rem;
+  float:left;
+  background:#d0d0d0;
+  margin: 1rem;
+  // margin-bottom: 1rem;
+  list-style: none;
+  text-align: center;
+  line-height: 4rem;
+  font-size: 0.7rem;
+}
+.query ul li{
+  padding: 0.5rem 1rem;
+  // list-style-type: square;
+  font-size: 0.7rem;
+}
+.query ul li span:nth-child(1){
+  float: left;
+}
+.query ul li span:nth-child(2){
+  float:right;
+}
+</style>

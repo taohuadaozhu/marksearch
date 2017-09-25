@@ -1,0 +1,415 @@
+<template>
+  <div>
+    <div class="filter">
+      <dl class="filter-info" v-if="type==='mark'">
+        <dd @click="openSimilar" style="width: 35%">
+          <span>类似商品/服务</span>
+        </dd>
+      </dl>
+      <dl class="filter-info" v-else>
+        <dd>
+          <div style="box-sizing: border-box;" v-bind:class="[{classA : isb}]" @click="tClass">
+            <div>驰名商标</div>
+          </div>
+        </dd>
+        <dd>
+          <span>类别</span>
+        </dd>
+        <dd @click="openIndustry">
+          <span>{{business}}</span>
+        </dd>
+        <dd @click="openState">
+          <span>更多</span>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="graypanel" v-show="isOpenIndustry" @click="isOpenIndustry=false">
+      <div class="propanel">
+        <ul>
+          <li v-bind:class="{ active : true}">不限</li>
+          <li v-for="i in typeList" v-bind:class="{ active1 : false }" @click.stop="selectPro(i)">{{i.name}}</li>
+        </ul>
+      </div>
+      <div class="regionpanel">
+        <ul>
+          <li>不限</li>
+          <li v-for="j in erTypeList" @click="newuBsiness(j)">{{j.name}}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="graypanel" v-show="isOpenState" @click="isOpenState=false">
+      <div class="mover">
+        <div class="mover-content">
+          <div class="mover-header">
+            <span>商标类型</span>
+          </div>
+          <div class="mover-btn">
+            <ul>
+              <li>普通</li>
+              <li>集体</li>
+              <li>证明</li>
+              <li>特殊</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mover-content">
+          <div class="mover-header">
+            <span>商标形式类型</span>
+          </div>
+          <div class="mover-btn">
+            <ul>
+              <li>图形</li>
+              <li>文字</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mover-content">
+          <div class="mover-header">
+            <span>地理标志</span>
+          </div>
+          <div class="mover-btn">
+            <ul>
+              <li>是地理标志商标</li>
+              <li>不是地理标志商标</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mover-footer">
+          <span>重置</span>
+          <span @click="ascertain()">确定</span>
+        </div>
+      </div>
+    </div>
+    <!-- 类似商品/服务 -->
+    <div class="graypanel" v-show="isOpenSimilar">
+      <div class="propanel">
+        <ul>
+          <li>不限</li>
+          <li :class="{ active:index===nowSelected1 }" v-for="(item, index) in goodsList" @click.stop="selectGoods(item.id,index)">{{item.title}}</li>
+        </ul>
+      </div>
+      <div class="regionpanel">
+        <ul>
+          <li>不限</li>
+          <li style="overflow: hidden;" v-for="(item, index) in erGoodsList">
+            <label style="display: block;">
+              {{item.title}}
+              <input style="display: none;" v-model="goodsSimilar" type="checkbox" :value="item.similar_code">
+              <icon class="selItems" style="float: right;" type="success-no-circle"></icon>
+            </label>
+          </li>
+        </ul>
+      </div>
+      <div class="clear"></div>
+      <div class="crossSearch">
+        <div>
+          <label for="u935_input">
+            <input id="u935_input" type="checkbox" value="checkbox" v-model="ifCrossSearch">
+            <span>是否交叉检索</span>
+          </label>
+        </div>
+        <p>勾选后会帮您匹配出和已选类似群可能类似的其他群组和商品项，方便您对商标进一步近似查询</p>
+        <div class="crossSearchResult">
+          <label style="display: block;" v-for="i in 10">
+            <input style="display: none;" v-model="goodsSimilar" type="checkbox">
+            <span>3004</span>
+          </label>
+        </div>
+      </div>
+      <div class="mover-footer" style="background-color: #f2f2f2;">
+        <span @click="resetSim()">重置</span>
+        <span @click="getSimCertain()">确定</span>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import api from '../fetch/api'
+import { Tabbar, TabbarItem, Group, Icon, Cell } from 'vux'
+export default {
+  props: ['type'],
+  components: {
+    Tabbar,
+    TabbarItem,
+    Group,
+    Icon,
+    Cell
+  },
+  data() {
+    return {
+      business: '行业',
+      isOpenState: false,
+      isOpenSimilar: false,
+      isOpenIndustry: false,
+      ifCrossSearch: false,
+      isb: false,
+      typeList: '',
+      goodsList: '',
+      erTypeList: '',
+      erGoodsList: '',
+      nowSelected1: -1,
+      goodsSimilar: [],
+      searchresult: {
+        goodsName: this.searchkey,
+        goodsCodeList: this.codes,
+        begin: 1,
+        limit: 12,
+        more: {
+          brandType: "",
+          brandFormType: "",
+          landMarInfo: ""
+        }
+      }
+    }
+  },
+  watch: {
+    ifCrossSearch: function(val, oldVal) {
+      if (val) {
+      }
+    }
+  },
+  methods: {
+    // 行业第一列选择
+    selectPro(i) {
+      this.active1 = true
+      this.erTypeList = i.secondLevelProfession
+    },
+    // 行业第二类选定
+    newuBsiness(j) {
+      this.business = j.name
+    },
+    loginOut() {
+      this.$router.push('login')	//暂时不做处理只去登录页面
+    },
+    openSimilar() {
+      this.isOpenSimilar = !this.isOpenSimilar
+      this.isOpenIndustry = false
+      this.isOpenState = false
+      api.getFirstAllTitle().then((res) => {
+        this.goodsList = res.dataList
+      })
+    },
+    selectGoods(id, index) {
+      this.nowSelected1 = index
+      api.getErAllTitle(id).then((res) => {
+        this.erGoodsList = res.dataList
+      })
+    },
+    selectGoodsItem(id, index) {
+      console.log(this.goodsSimilar);
+    },
+    tClass() {
+      this.isb = true
+    },
+    ascertain() {
+      this.isOpenState = false
+    },
+    openIndustry() {
+      this.isOpenIndustry = !this.isOpenIndustry
+      this.isOpenSimilar = false
+      this.isOpenState = false
+      api.getProfessionTypeList().then((res) => {
+        this.typeList = res.dataList
+      })
+    },
+    openState() {
+      this.isOpenState = !this.isOpenState
+      this.isOpenSimilar = false
+      this.isOpenIndustry = false
+    },
+    getSimCertain() {
+      this.isOpenSimilar = false
+      this.$emit('getSimId', this.goodsSimilar)
+    },
+    resetSim() {
+      this.goodsSimilar = []
+    }
+  },
+  mounted: function() {
+    document.body.scrollTop = 0
+  }
+}
+</script>
+<style lang="less" scoped>
+.graypanel {
+  position: fixed;
+  width: 100%;
+  z-index: 9999;
+  background-color: rgba(99, 99, 99, .5);
+  height: 90%;
+  overflow: auto;
+  .propanel,
+  .regionpanel {
+    float: left;
+    width: 40%;
+    height: 45%;
+    overflow: auto;
+    background-color: white;
+    li {
+      font-size: .75rem;
+      line-height: 2rem;
+      padding-left: 8px;
+      border-bottom: 0.5px solid #dcdcdc;
+      border-right: 1px solid #dcdcdc;
+    }
+  }
+  .regionpanel {
+    width: 60%;
+    background-color: #F2F2F2;
+    li {
+      font-size: .7rem;
+      line-height: 2rem;
+    }
+  }
+  .crossSearch {
+    border-top: 1px solid #dcdcdc;
+    background-color: #f2f2f2;
+    padding: 10px;
+    overflow: auto;
+    label {
+      font-size: 16px;
+    }
+    p {
+      font-size: 14px;
+      color: #999;
+      text-indent: 28px;
+    }
+    .crossSearchResult {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      label {
+        >span {
+          display: inline-block;
+          padding: 3px 10px;
+          margin-top: 10px;
+          font-size: .8rem;
+          border: 1px solid #797979;
+          margin-right: 10px;
+        }
+        input[type=checkbox]:checked+span {
+          background-color: #19B5FE;
+        }
+      }
+    }
+  }
+  .mover-footer {
+    height: 3rem;
+    border-top: 1px solid #c0c0c0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    span {
+      font-size: 1rem;
+      text-align: center;
+      width: 6rem;
+      height: 1.5rem;
+      border-radius: 3px;
+      border: 1px solid #797979;
+      margin: 1rem;
+    }
+  }
+
+  .mover {
+    width: 100%;
+    background: #ffffff;
+    .mover-content {
+      .mover-header {
+        padding: 1rem;
+        border-bottom: 1px solid #c0c0c0;
+        >span {
+          font-size: 1rem;
+        }
+      }
+      .mover-btn {
+        ul {
+          padding: 1rem 0;
+          overflow: hidden;
+          li {
+            padding: 0 10px;
+            height: 1.8rem;
+            line-height: 1.8rem;
+            text-align: center;
+            margin-left: .7rem;
+            border-radius: 3px;
+            float: left;
+            background: #F2F2F2;
+            list-style: none;
+            font-size: .75rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+.active {
+  background-color: #F2F2F2;
+  color: #44C1FC;
+}
+
+.filter {
+  position: fixed;
+  top: 2.75rem;
+  width: 100%;
+  z-index: 9;
+}
+
+.clear {
+  clear: both;
+}
+
+.classA {
+  background-color: #fff;
+}
+
+.filter-info {
+  overflow: hidden;
+  border-bottom: 1px solid #dfdfdf;
+  display: flex;
+  justify-content: space-around;
+  background: white;
+  dd {
+    width: 20%;
+    background: #F2F2F2;
+    border: 1px solid #E5E5E5;
+    border-radius: 4px;
+    line-height: 2.2rem;
+    font-size: .85rem;
+    text-align: center;
+    margin: .5rem .2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    span::after {
+      content: " ";
+      display: inline-block;
+      line-height: 1.2rem;
+      height: 4px;
+      width: 4px;
+      border-width: 0 2px 2px 0;
+      border-color: #333333;
+      border-style: solid;
+      -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+      transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+      position: relative;
+      top: -3px;
+      left: 8px;
+    }
+  }
+}
+
+dd:last-child {
+  border-right: 0;
+}
+
+.selItems {
+  display: none;
+}
+
+input[type=checkbox]:checked+.selItems {
+  display: block;
+}
+</style>
